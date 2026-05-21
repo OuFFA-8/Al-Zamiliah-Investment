@@ -1237,7 +1237,7 @@ export default function ProjectDetailsPage({
                         </a>
                       </div>
                     )}
-                    {project.video && (
+                    {/* {project.video && (
                       <div className="pdp-feature">
                         <span className="pdp-feature-icon">
                           <svg
@@ -1291,7 +1291,7 @@ export default function ProjectDetailsPage({
                           {isRTL ? "فيديو المشروع" : "Project Video"}
                         </a>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 </div>
               )}
