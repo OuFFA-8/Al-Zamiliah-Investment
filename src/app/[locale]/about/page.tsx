@@ -465,7 +465,7 @@ export default async function AboutPage({
                     placeholder={isRTL ? "البريد الإلكتروني" : "Email"}
                     required
                   />
-                  <input type="tel" placeholder={isRTL ? "الهاتف" : "Phone"} />
+                  <input type="tel" dir={isRTL ? "rtl" : "ltr"} placeholder={isRTL ? "الهاتف" : "Phone"} />
                   <textarea
                     placeholder={isRTL ? "الرسالة" : "Message"}
                     rows={4}

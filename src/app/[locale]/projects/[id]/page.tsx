@@ -209,6 +209,7 @@ function AptContactForm({ apt, isRTL }: { apt: Apartment; isRTL: boolean }) {
             />
             <input
               placeholder={isRTL ? "الهاتف" : "Phone"}
+              dir={isRTL ? "rtl" : "ltr"}
               value={formData.phone}
               onChange={(e) =>
                 setFormData((p) => ({ ...p, phone: e.target.value }))
