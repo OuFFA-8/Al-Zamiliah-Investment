@@ -6,6 +6,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProjectGallery from "@/components/ProjectGallery";
+import Image from "next/image";
 
 interface GalleryImage {
   id: number;
@@ -890,7 +891,7 @@ export default function ProjectDetailsPage({
                                             target="_blank"
                                             rel="noopener noreferrer"
                                           >
-                                            <img
+                                            <Image
                                               src={
                                                 apt.image.startsWith("http")
                                                   ? apt.image
@@ -900,6 +901,9 @@ export default function ProjectDetailsPage({
                                               }
                                               alt={aptName}
                                               className="pdp-unit-image"
+                                              width={400}
+                                              height={300}
+                                              style={{ objectFit: "cover" }}
                                             />
                                           </a>
                                         ) : (
