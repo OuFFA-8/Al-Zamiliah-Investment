@@ -448,8 +448,12 @@ export default async function AboutPage({
               {/* Right - Form */}
               <div className="contact-form-wrapper">
                 <h3 className="contact-form-title">
-                  {isRTL ? "تواصل" : "Contact"}
+                  {isRTL ? "تواصل معنا " : "Contact"}
                 </h3>
+                <p>
+                  يرغب خبراؤنا ومطورونا في المساهمة بخبراتهم وأفكارهم ومساعدتك
+                  اليوم
+                </p>
                 <form className="contact-form-home">
                   <input
                     type="text"

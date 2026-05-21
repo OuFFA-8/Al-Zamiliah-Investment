@@ -202,8 +202,12 @@ export default async function HomePage({
               {/* Right - Form */}
               <div className="contact-form-wrapper">
                 <h3 className="contact-form-title">
-                  {isRTL ? "تواصل" : "Contact"}
+                  {isRTL ? "تواصل معنا" : "Contact"}
                 </h3>
+                <p>
+                  يرغب خبراؤنا ومطورونا في المساهمة بخبراتهم وأفكارهم ومساعدتك
+                  اليوم
+                </p>
                 <form className="contact-form-home">
                   <input
                     type="text"
@@ -215,7 +219,7 @@ export default async function HomePage({
                     placeholder={isRTL ? "البريد الإلكتروني" : "Email"}
                     required
                   />
-                  <input type="tel" placeholder={isRTL ? "الهاتف" : "Phone"} />
+                  <input type="tel" dir={isRTL ? "rtl" : "ltr"} placeholder={isRTL ? "الهاتف" : "Phone"} />
                   <textarea
                     placeholder={isRTL ? "الرسالة" : "Message"}
                     rows={4}
