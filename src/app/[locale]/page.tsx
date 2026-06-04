@@ -18,7 +18,6 @@ export default async function HomePage({
   // Fetch featured projects from Neon database
   const projects = await prisma.project.findMany({
     where: {
-      status: { in: [1, 2, 3] },
       isFeatured: 1,
     },
     orderBy: { sortOrder: "asc" },
