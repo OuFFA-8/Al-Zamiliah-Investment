@@ -22,7 +22,7 @@ export default async function HomePage({
       isFeatured: 1,
     },
     orderBy: { sortOrder: "asc" },
-    take: 4,
+    take: 6,
   });
 
   const stats = [
