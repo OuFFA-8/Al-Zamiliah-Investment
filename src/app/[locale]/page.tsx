@@ -82,7 +82,7 @@ export default async function HomePage({
             loop
             muted
             playsInline
-            poster="/images/hero-poster.jpg"
+            // poster="/images/hero-poster.jpg"
           >
             <source src="/media/FINAL_RENDER2.mp4" type="video/mp4" />
           </video>

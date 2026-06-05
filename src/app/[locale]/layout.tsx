@@ -3,6 +3,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import PageLoader from '@/components/PageLoader';
 
 export const metadata: Metadata = {
     title: "الزاملية للتطوير والاستثمار العقاري | Alzamiliah Real Estate",
@@ -43,6 +44,7 @@ export default async function LocaleLayout({
             </head>
             <body className={`antialiased ${isRTL ? "font-cairo" : ""}`}>
                 <NextIntlClientProvider messages={messages}>
+                    <PageLoader/>
                     {children}
                 </NextIntlClientProvider>
             </body>
