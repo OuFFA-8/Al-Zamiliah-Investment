@@ -109,6 +109,7 @@ export default function NewProjectPage() {
     unitsCount: 0,
     elevatorsCount: 0,
     isFeatured: 0,
+    sortOrder: 0,
   });
 
   // Image uploads (6 slots)
@@ -193,6 +194,7 @@ export default function NewProjectPage() {
       statusApartment: parseInt(String(form.statusApartment)) || 0,
       availability: parseInt(String(form.availability)) || 1,
       isFeatured: parseInt(String(form.isFeatured)) || 0,
+      sortOrder: parseInt(String(form?.sortOrder)) || 0,
     };
 
     try {
@@ -736,7 +738,17 @@ export default function NewProjectPage() {
                 </select>
               </div>
             </div>
-
+            <div className="admin-field" style={{ marginBottom: "12px" }}>
+              <label>{isRTL ? "الترتيب" : "Sort Order"}</label>
+              <input
+                type="number"
+                min={0}
+                value={form.sortOrder}
+                onChange={(e) =>
+                  updateField("sortOrder", parseInt(e.target.value) || 0)
+                }
+              />
+            </div>
             {/* File Uploads */}
             <div className="admin-section">
               <h3>{isRTL ? "ملفات المشروع" : "Project Files"}</h3>
