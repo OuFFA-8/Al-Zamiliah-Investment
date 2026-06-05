@@ -74,20 +74,6 @@ const projectStateOptions = {
     ],
 };
 
-// City options (from original site)
-const cityOptions = {
-    en: [
-        { value: 'جدة', label: 'Jeddah' },
-        { value: 'الرياض', label: 'Riyadh' },
-        { value: 'الطائف', label: 'Taif' },
-    ],
-    ar: [
-        { value: 'جدة', label: 'جدة' },
-        { value: 'الرياض', label: 'الرياض' },
-        { value: 'الطائف', label: 'الطائف' },
-    ],
-};
-
 // Custom dropdown component matching the original site's style
 function FilterDropdown({ label, options, value, onChange }: {
     label: string;
@@ -163,6 +149,11 @@ export default function ProjectsPage() {
             .catch(() => setLoading(false));
     }, []);
 
+    // Build city list dynamically from fetched projects
+    const cities = useMemo(() => {
+        return [...new Set(projects.map(p => p.city).filter(Boolean))] as string[];
+    }, [projects]);
+
     // Filter projects — matching the original site's JS filter logic
     const filteredProjects = useMemo(() => {
         return projects.filter(p => {
@@ -233,10 +224,10 @@ export default function ProjectsPage() {
                                 onChange={setTypeFilter}
                             />
 
-                            {/* City Filter */}
+                            {/* City Filter — built dynamically from DB */}
                             <FilterDropdown
-                                label={isRTL ? 'المدينة' : 'city'}
-                                options={cityOptions[lang]}
+                                label={isRTL ? 'المدينة' : 'City'}
+                                options={cities.map(c => ({ value: c, label: c }))}
                                 value={cityFilter}
                                 onChange={setCityFilter}
                             />
