@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import ProjectCard from "@/components/ProjectCard";
 import prisma from "@/lib/prisma";
 import StatsBar from "./StatsBar";
+import ContactForm from '@/components/Contact/ContactForm';
 
 export default async function HomePage({
   params,
@@ -208,27 +209,8 @@ export default async function HomePage({
                   يرغب خبراؤنا ومطورونا في المساهمة بخبراتهم وأفكارهم ومساعدتك
                   اليوم
                 </p>
-                <form className="contact-form-home">
-                  <input
-                    type="text"
-                    placeholder={isRTL ? "الاسم" : "Name"}
-                    required
-                  />
-                  <input
-                    type="email"
-                    placeholder={isRTL ? "البريد الإلكتروني" : "Email"}
-                    required
-                  />
-                  <input type="tel" dir={isRTL ? "rtl" : "ltr"} placeholder={isRTL ? "الهاتف" : "Phone"} />
-                  <textarea
-                    placeholder={isRTL ? "الرسالة" : "Message"}
-                    rows={4}
-                    required
-                  ></textarea>
-                  <button type="submit" className="btn-primary">
-                    {isRTL ? "إرسال" : "Send"}
-                  </button>
-                </form>
+                <ContactForm isRTL={isRTL} />
+
               </div>
             </div>
           </div>
