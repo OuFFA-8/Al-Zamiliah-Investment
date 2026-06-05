@@ -944,7 +944,7 @@ export default function ProjectDetailsPage({
               )}
 
               {/* Map */}
-              {project.lat && project.lng && (
+              {project.lat != null && project.lng != null && project.lat !== 0 && project.lng !== 0 && (
                 <div className="pdp-card">
                   <div className="pdp-card-label">
                     {isRTL ? "الخريطة" : "Map"}
