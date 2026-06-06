@@ -36,6 +36,7 @@ export async function PUT(
                 entrance: body.entrance ?? undefined,
                 majlis: body.majlis ?? undefined,
                 storage: body.storage ?? undefined,
+                roof: body.roof != null ? parseInt(body.roof) : undefined,
             },
         });
         return NextResponse.json({ apartment });

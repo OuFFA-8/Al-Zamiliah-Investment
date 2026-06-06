@@ -51,6 +51,7 @@ export async function POST(request: NextRequest) {
                 entrance: body.entrance ?? 0,
                 majlis: body.majlis ?? 0,
                 storage: body.storage ?? 0,
+                roof: body.roof ?? 0,
             },
         });
         return NextResponse.json({ apartment });
