@@ -515,11 +515,21 @@ export default function ProjectDetailsPage({
   ].filter((g) => g.on && g.on > 0);
 
   const buildings: Record<string, Apartment[]> = {};
-  project.apartments?.forEach((a) => {
+project.apartments.forEach(a => {
     const b = a.buildingName || "General";
     if (!buildings[b]) buildings[b] = [];
     buildings[b].push(a);
-  });
+});
+
+// Sort apartments within each building by apartmentNumber then nameAr
+Object.keys(buildings).forEach(b => {
+    buildings[b].sort((x, y) => {
+        if (x.apartmentNumber !== y.apartmentNumber) {
+            return (x.apartmentNumber || 0) - (y.apartmentNumber || 0);
+        }
+        return (x.nameAr || '').localeCompare(y.nameAr || '', 'ar');
+    });
+});
 
   // Check both livePreview and icon3d fields for 3D viewer URL
   const livePreviewLinks =
