@@ -13,6 +13,7 @@ export default function Header({ forceWhite = false }: HeaderProps) {
   const locale = useLocale();
   const isRTL = locale === "ar";
   const [isScrolled, setIsScrolled] = useState(forceWhite);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     if (forceWhite) {
@@ -22,6 +23,7 @@ export default function Header({ forceWhite = false }: HeaderProps) {
 
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 100);
+      setMenuOpen(false);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -118,11 +120,41 @@ export default function Header({ forceWhite = false }: HeaderProps) {
             </div>
 
             {/* Mobile Menu Button */}
-            <button className="mobile-menu-btn" aria-label="Menu">
-              <i className="fas fa-bars"></i>
+            <button
+              className="mobile-menu-btn"
+              aria-label="Menu"
+              onClick={() => setMenuOpen((prev) => !prev)}
+            >
+              <i className={menuOpen ? "fas fa-times" : "fas fa-bars"}></i>
             </button>
           </div>
         </div>
+
+        {menuOpen && (
+    <div className="mobile-nav">
+        <ul>
+            {navItems.map((item, index) => (
+                <li key={index}>
+                    {item.disabled ? (
+                        <span
+                            onClick={() => {
+                                alert(isRTL ? 'تحت الإنشاء' : 'Coming Soon');
+                                setMenuOpen(false);
+                            }}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            {item.label}
+                        </span>
+                    ) : (
+                        <Link href={item.href} onClick={() => setMenuOpen(false)}>
+                            {item.label}
+                        </Link>
+                    )}
+                </li>
+            ))}
+        </ul>
+    </div>
+)}
       </div>
     </header>
   );

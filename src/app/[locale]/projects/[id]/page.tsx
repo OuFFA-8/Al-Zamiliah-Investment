@@ -36,6 +36,8 @@ interface Apartment {
   storage: number | null;
   garden: number | null;
   cars: number | null;
+  roof: number | null;
+
 }
 interface Project {
   id: number;
@@ -115,11 +117,13 @@ function AptFeatures({ apt, isRTL }: { apt: Apartment; isRTL: boolean }) {
     { v: apt.bedrooms, ar: "غرفة نوم", en: "Bedroom" },
     { v: apt.majlis, ar: "صالة عائلية", en: "Hall" },
     { v: apt.maidRoom, ar: "غرفة خادمة", en: "House Manager" },
-    { v: apt.entrance, ar: "مدخلين", en: "Two Entrances" },
+    { v: apt.entrance, ar: "مدخل خاص", en: "Private Enterance" },
     { v: apt.livingRoom, ar: "مجلس", en: "Living Room" },
     { v: apt.storage, ar: "مخزن", en: "Storage" },
     { v: apt.garden, ar: "حديقة", en: "Garden" },
     { v: apt.driverRoom, ar: "غرفة سائق", en: "Driver Room" },
+    { v: apt.roof, ar: 'سطح خاص', en: 'Private Roof' },
+
   ].filter((i) => i.v && i.v > 0);
   if (!items.length) return null;
   return (
