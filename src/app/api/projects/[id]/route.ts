@@ -22,9 +22,16 @@ export async function GET(
     const project = await prisma.project.findUnique({
       where: { id: projectId },
       include: {
-        apartments: true,
-        galleryImages: { orderBy: { sortOrder: "asc" } },
-      },
+    apartments: {
+        orderBy: [
+            { buildingName: 'asc' },
+            { nameAr: 'asc' },
+        ],
+    },
+    galleryImages: {
+        orderBy: { sortOrder: 'asc' },
+    },
+}
     });
 
     if (!project) {
