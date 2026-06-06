@@ -109,6 +109,7 @@ model Apartment {
   entrance        Int?     @default(0)
   majlis          Int?     @default(0)
   storage         Int?     @default(0)
+  roof            Int?     @default(0)
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
