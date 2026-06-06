@@ -37,6 +37,7 @@ interface Apartment {
   garden: number | null;
   cars: number | null;
   roof: number | null;
+apartmentNumber: number | null;
 
 }
 interface Project {
