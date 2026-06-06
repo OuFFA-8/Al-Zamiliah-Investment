@@ -23,10 +23,12 @@ export async function GET(
       where: { id: projectId },
       include: {
     apartments: {
-        orderBy: [
-            { buildingName: 'asc' },
-            { nameAr: 'asc' },
-        ],
+       orderBy: [
+        { buildingName: 'asc' },
+        { apartmentNumber: 'asc' },
+        { nameAr: 'asc' },
+        { nameEn: 'asc' },
+    ],
     },
     galleryImages: {
         orderBy: { sortOrder: 'asc' },
