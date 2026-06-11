@@ -135,7 +135,7 @@ export default async function HomePage({
               {/* Right - About Image */}
               <div className="about-image-box">
                 <Image
-                  src="/images/alzamiliah-about.svg"
+                  src="/images/logow.png"
                   alt={
                     isRTL
                       ? "الزاملية للاستثمار والتطوير العقاري"

@@ -79,8 +79,8 @@ export default function PageLoader() {
                     <Image
                         src="/images/logo1.png"
                         alt="Alzamiliah"
-                        width={100}
-                        height={80}
+                        width={120}
+                        height={200}
                         priority
                     />
                 </div>
