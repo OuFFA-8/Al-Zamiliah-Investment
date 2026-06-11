@@ -4,6 +4,11 @@ import createNextIntlPlugin from 'next-intl/plugin';
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 const nextConfig: NextConfig = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '50mb',
+    },
+  },
   images: {
     remotePatterns: [
       {
@@ -19,7 +24,6 @@ const nextConfig: NextConfig = {
         hostname: 'www.vstaxp.com',
       },
     ],
-    // Allow locally uploaded images (from /uploads/projects/*)
     unoptimized: true,
   },
 };
