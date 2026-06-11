@@ -37,8 +37,7 @@ interface Apartment {
   garden: number | null;
   cars: number | null;
   roof: number | null;
-apartmentNumber: number | null;
-
+  apartmentNumber: number | null;
 }
 interface Project {
   id: number;
@@ -64,6 +63,7 @@ interface Project {
   linkMap: string | null;
   livePreview: string | null;
   icon3d: string | null;
+  iconFollow: string | null;
   city: string | null;
   lat: number | null;
   lng: number | null;
@@ -123,8 +123,7 @@ function AptFeatures({ apt, isRTL }: { apt: Apartment; isRTL: boolean }) {
     { v: apt.storage, ar: "مخزن", en: "Storage" },
     { v: apt.garden, ar: "حديقة", en: "Garden" },
     { v: apt.driverRoom, ar: "غرفة سائق", en: "Driver Room" },
-    { v: apt.roof, ar: 'سطح خاص', en: 'Private Roof' },
-
+    { v: apt.roof, ar: "سطح خاص", en: "Private Roof" },
   ].filter((i) => i.v && i.v > 0);
   if (!items.length) return null;
   return (
@@ -268,6 +267,7 @@ export default function ProjectDetailsPage({
   const [openBuilding, setOpenBuilding] = useState<string | null>(null);
   const [expandedApt, setExpandedApt] = useState<number | null>(null);
   const [show3D, setShow3D] = useState(false);
+  const [showFollow, setShowFollow] = useState(false);
 
   useEffect(() => {
     params.then(({ id }) => {
@@ -516,30 +516,34 @@ export default function ProjectDetailsPage({
   ].filter((g) => g.on && g.on > 0);
 
   const buildings: Record<string, Apartment[]> = {};
-project.apartments.forEach(a => {
+  project.apartments.forEach((a) => {
     const b = a.buildingName || "General";
     if (!buildings[b]) buildings[b] = [];
     buildings[b].push(a);
-});
+  });
 
-// Sort apartments within each building by apartmentNumber then nameAr
-Object.keys(buildings).forEach(b => {
+  // Sort apartments within each building by apartmentNumber then nameAr
+  Object.keys(buildings).forEach((b) => {
     buildings[b].sort((x, y) => {
-        if (x.apartmentNumber !== y.apartmentNumber) {
-            return (x.apartmentNumber || 0) - (y.apartmentNumber || 0);
-        }
-        return (x.nameAr || '').localeCompare(y.nameAr || '', 'ar');
+      if (x.apartmentNumber !== y.apartmentNumber) {
+        return (x.apartmentNumber || 0) - (y.apartmentNumber || 0);
+      }
+      return (x.nameAr || "").localeCompare(y.nameAr || "", "ar");
     });
-});
+  });
 
   // Check both livePreview and icon3d fields for 3D viewer URL
-  const livePreviewLinks =
-    project.livePreview?.split(",").filter((l: string) => l.trim()) || [];
-  const icon3dLinks =
-    project.icon3d?.split(",").filter((l: string) => l.trim()) || [];
-  const liveLinks =
-    livePreviewLinks.length > 0 ? livePreviewLinks : icon3dLinks;
-  const has3D = liveLinks.length > 0;
+  // const livePreviewLinks =
+  //   project.livePreview?.split(",").filter((l: string) => l.trim()) || [];
+  // const icon3dLinks =
+  //   project.icon3d?.split(",").filter((l: string) => l.trim()) || [];
+  // const liveLinks =
+  //   livePreviewLinks.length > 0 ? livePreviewLinks : icon3dLinks;
+  // const has3D = liveLinks.length > 0;
+  const icon3dLink = project.icon3d?.trim() || null;
+  const iconFollowLink = project.iconFollow?.trim() || null;
+  const has3D = !!icon3dLink;
+  const hasFollow = !!iconFollowLink;
 
   return (
     <>
@@ -577,7 +581,7 @@ Object.keys(buildings).forEach(b => {
           />
 
           {/* 3D & Construction Icons */}
-          {has3D && (
+          {/* {has3D && (
             <div className="pdp-3d-row">
               <button
                 className={`pdp-3d-icon-btn ${show3D ? "active" : ""}`}
@@ -624,16 +628,97 @@ Object.keys(buildings).forEach(b => {
                 </span>
               </a>
             </div>
+          )} */}
+
+          {(has3D || hasFollow) && (
+            <div className="pdp-3d-row">
+              {has3D && (
+                <button
+                  className={`pdp-3d-icon-btn ${show3D ? "active" : ""}`}
+                  onClick={() => setShow3D(!show3D)}
+                >
+                  <span className="pdp-3d-icon-circle">
+                    <svg
+                      width="28"
+                      height="28"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    >
+                      <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                      <path d="M2 17l10 5 10-5" />
+                      <path d="M2 12l10 5 10-5" />
+                    </svg>
+                  </span>
+                  <span>3D</span>
+                </button>
+              )}
+              {hasFollow && (
+                <button
+                  className={`pdp-3d-icon-btn ${showFollow ? "active" : ""}`}
+                  onClick={() => setShowFollow(!showFollow)}
+                >
+                  <span className="pdp-3d-icon-circle">
+                    <svg
+                      width="28"
+                      height="28"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    >
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <path d="M3 9h18M9 3v18M15 13h2M15 17h2" />
+                    </svg>
+                  </span>
+                  <span>
+                    {isRTL
+                      ? "متابعة مراحل البناء"
+                      : "Follow-up of construction stages"}
+                  </span>
+                </button>
+              )}
+            </div>
           )}
 
           {/* 3D Preview Iframe */}
-          {show3D && has3D && (
+          {/* {show3D && has3D && (
             <div className="pdp-3d-preview">
               <div className="pdp-3d-preview-title">
                 {isRTL ? "معاينة المشروع" : "Project Preview"}
               </div>
               <iframe
                 src={liveLinks[0].trim()}
+                allowFullScreen
+                allow="accelerometer; autoplay; camera; gyroscope; fullscreen"
+                style={{ width: "100%", height: 800, border: "none" }}
+              />
+            </div>
+          )} */}
+
+          {show3D && has3D && (
+            <div className="pdp-3d-preview">
+              <div className="pdp-3d-preview-title">
+                {isRTL ? "معاينة المشروع" : "Project Preview"}
+              </div>
+              <iframe
+                src={icon3dLink!}
+                allowFullScreen
+                allow="accelerometer; autoplay; camera; gyroscope; fullscreen"
+                style={{ width: "100%", height: 800, border: "none" }}
+              />
+            </div>
+          )}
+          {showFollow && hasFollow && (
+            <div className="pdp-3d-preview">
+              <div className="pdp-3d-preview-title">
+                {isRTL
+                  ? "متابعة مراحل البناء"
+                  : "Follow-up of construction stages"}
+              </div>
+              <iframe
+                src={iconFollowLink!}
                 allowFullScreen
                 allow="accelerometer; autoplay; camera; gyroscope; fullscreen"
                 style={{ width: "100%", height: 800, border: "none" }}
@@ -959,27 +1044,34 @@ Object.keys(buildings).forEach(b => {
               )}
 
               {/* Map */}
-              {project.lat != null && project.lng != null && project.lat !== 0 && project.lng !== 0 && (
-                <div className="pdp-card">
-                  <div className="pdp-card-label">
-                    {isRTL ? "الخريطة" : "Map"}
+              {project.lat != null &&
+                project.lng != null &&
+                project.lat !== 0 &&
+                project.lng !== 0 && (
+                  <div className="pdp-card">
+                    <div className="pdp-card-label">
+                      {isRTL ? "الخريطة" : "Map"}
+                    </div>
+                    <div
+                      style={{
+                        borderRadius: 12,
+                        overflow: "hidden",
+                        height: 300,
+                      }}
+                    >
+                      <iframe
+                        src={`https://maps.google.com/maps?q=${project.lat},${project.lng}&z=15&output=embed`}
+                        allowFullScreen
+                        loading="lazy"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          border: "none",
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div
-                    style={{
-                      borderRadius: 12,
-                      overflow: "hidden",
-                      height: 300,
-                    }}
-                  >
-                    <iframe
-                      src={`https://maps.google.com/maps?q=${project.lat},${project.lng}&z=15&output=embed`}
-                      allowFullScreen
-                      loading="lazy"
-                      style={{ width: "100%", height: "100%", border: "none" }}
-                    />
-                  </div>
-                </div>
-              )}
+                )}
 
               {/* Project Files & Video */}
               {(project.projectFile ||
