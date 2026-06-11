@@ -266,9 +266,10 @@ export default function ProjectDetailsPage({
   const [error, setError] = useState<string | null>(null);
   const [openBuilding, setOpenBuilding] = useState<string | null>(null);
   const [expandedApt, setExpandedApt] = useState<number | null>(null);
-  const [show3D, setShow3D] = useState(false);
-  const [showFollow, setShowFollow] = useState(false);
+  // const [show3D, setShow3D] = useState(false);
+  // const [showFollow, setShowFollow] = useState(false);
 
+  const [activeView, setActiveView] = useState<"3d" | "follow" | null>(null);
   useEffect(() => {
     params.then(({ id }) => {
       fetch(`/api/public/projects/${id}`)
@@ -634,8 +635,8 @@ export default function ProjectDetailsPage({
             <div className="pdp-3d-row">
               {has3D && (
                 <button
-                  className={`pdp-3d-icon-btn ${show3D ? "active" : ""}`}
-                  onClick={() => setShow3D(!show3D)}
+                  className={`pdp-3d-icon-btn ${activeView === "3d" ? "active" : ""}`}
+                  onClick={() => setActiveView(activeView === "3d" ? null : "3d")}
                 >
                   <span className="pdp-3d-icon-circle">
                     <svg
@@ -656,8 +657,8 @@ export default function ProjectDetailsPage({
               )}
               {hasFollow && (
                 <button
-                  className={`pdp-3d-icon-btn ${showFollow ? "active" : ""}`}
-                  onClick={() => setShowFollow(!showFollow)}
+                  className={`pdp-3d-icon-btn ${activeView === "follow" ? "active" : ""}`}
+                  onClick={() => setActiveView(activeView === "follow" ? null : "follow")}
                 >
                   <span className="pdp-3d-icon-circle">
                     <svg
@@ -697,7 +698,7 @@ export default function ProjectDetailsPage({
             </div>
           )} */}
 
-          {show3D && has3D && (
+          {activeView === "3d"  && has3D && (
             <div className="pdp-3d-preview">
               <div className="pdp-3d-preview-title">
                 {isRTL ? "معاينة المشروع" : "Project Preview"}
@@ -710,7 +711,7 @@ export default function ProjectDetailsPage({
               />
             </div>
           )}
-          {showFollow && hasFollow && (
+          {activeView === "follow"  && hasFollow && (
             <div className="pdp-3d-preview">
               <div className="pdp-3d-preview-title">
                 {isRTL
