@@ -1,6 +1,14 @@
 // Prisma Schema for Alzamiliah Website
 // Database: Neon PostgreSQL
 
+
+enum ContactMethod {
+  PHONE
+  WHATSAPP
+  EMAIL
+}
+
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -78,6 +86,7 @@ model Project {
   galleryImages   ProjectImage[]
   createdAt       DateTime      @default(now()) @map("created_at")
   updatedAt       DateTime      @updatedAt @map("updated_at")
+  qrCodeLeads QrCodeLeadProject[]
 
   @@map("projects")
 }
@@ -128,6 +137,32 @@ model ContactRequest {
 
   @@map("contact_requests")
 }
+
+model QrCodeLead {
+  id            Int                 @id @default(autoincrement())
+  name          String
+  email         String
+  phone         String
+  contactMethod ContactMethod       @map("contact_method")
+  status        String              @default("new")
+  createdAt     DateTime            @default(now()) @map("created_at")
+  projects      QrCodeLeadProject[]
+
+  @@map("qr_code_leads")
+}
+
+model QrCodeLeadProject {
+  id        Int        @id @default(autoincrement())
+  leadId    Int        @map("lead_id")
+  projectId Int        @map("project_id")
+  lead      QrCodeLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  project   Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([leadId, projectId])
+  @@map("qr_code_lead_projects")
+}
+
+
 
 model Visitor {
   id        Int      @id @default(autoincrement())
