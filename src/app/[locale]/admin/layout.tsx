@@ -91,6 +91,11 @@ export default function AdminLayout({
       labelEn: "Contact Requests",
     },
     {
+      href: `/${locale}/admin/qrcode-leads`,
+      labelAr: "طلبات QR Code",
+      labelEn: "QR Leads",
+    },
+    {
       href: `/${locale}/admin/statistics`,
       labelAr: "أحصائيات الموقع",
       labelEn: "Site Statistics",
