@@ -422,23 +422,8 @@ export default function QrCodePage() {
                     )}
                 </div>
 
-                {/* Trust badges */}
-                <div style={{ borderTop: '1px solid rgba(197,168,128,0.2)', background: 'rgba(55,28,10,0.97)', padding: '40px 20px' }}>
-                    <div style={{ maxWidth: '820px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
-                        {trustBadges.map((b, i) => {
-                            const Icon = b.icon;
-                            return (
-                                <div key={i} style={{ textAlign: 'center' }}>
-                                    <div style={{ width: '44px', height: '44px', borderRadius: '50%', margin: '0 auto 12px', background: 'rgba(197,168,128,0.14)', border: '1px solid rgba(197,168,128,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <Icon size={20} style={{ color: '#c5a880' }} />
-                                    </div>
-                                    <h4 style={{ fontWeight: 700, fontSize: '13px', margin: '0 0 4px', color: '#fff' }}>{isRTL ? b.titleAr : b.titleEn}</h4>
-                                    <p style={{ color: '#9ca3af', fontSize: '11px', margin: 0 }}>{isRTL ? b.subAr : b.subEn}</p>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
+                
+          
             </div>
         </div>
     );
