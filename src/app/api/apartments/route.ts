@@ -3,72 +3,109 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function GET(request: NextRequest) {
-    const projectId = request.nextUrl.searchParams.get('projectId');
+const VALID_STATUSES = ['available', 'reserved', 'sold', 'محجوب'];
 
-    try {
-        const apartments = await prisma.apartment.findMany({
-            where: projectId ? { projectId: parseInt(projectId) } : {},
-            orderBy: [
-                { buildingName: 'asc' },
-                { apartmentNumber: 'asc' },
-                { floor: 'asc' },
-            ],
-        });
-        return NextResponse.json({ apartments });
-    } catch (error) {
-        console.error('Error fetching apartments:', error);
-        return NextResponse.json({ apartments: [] });
+/* تحقق مشترك — يترجعله array فيه رسائل الخطأ (فاضية لو كل حاجة تمام) */
+function validateApartment(body: any, isUpdate: boolean): string[] {
+  const errors: string[] = [];
+
+  if (!isUpdate || body.unitCode !== undefined) {
+    if (!body.unitCode || !String(body.unitCode).trim()) {
+      errors.push('كود الوحدة مطلوب');
     }
+  }
+  if (!isUpdate || body.price !== undefined) {
+    if (body.price === null || body.price === '' || isNaN(Number(body.price))) {
+      errors.push('السعر مطلوب ويجب أن يكون رقمًا');
+    }
+  }
+  if (!isUpdate || body.type !== undefined) {
+    if (!body.type || !String(body.type).trim()) {
+      errors.push('نوع الوحدة مطلوب');
+    }
+  }
+  if (
+    body.status !== undefined &&
+    body.status !== null &&
+    !VALID_STATUSES.includes(body.status)
+  ) {
+    errors.push('حالة الوحدة غير صحيحة');
+  }
+
+  return errors;
+}
+
+export async function GET(request: NextRequest) {
+  const projectId = request.nextUrl.searchParams.get('projectId');
+
+  try {
+    const apartments = await prisma.apartment.findMany({
+      where: projectId ? { projectId: parseInt(projectId) } : {},
+      orderBy: [{ buildingName: 'asc' }, { unitCode: 'asc' }],
+    });
+    return NextResponse.json({ apartments });
+  } catch (error) {
+    console.error('Error fetching apartments:', error);
+    return NextResponse.json({ apartments: [] });
+  }
 }
 
 export async function POST(request: NextRequest) {
-    try {
-        const body = await request.json();
-        const apartment = await prisma.apartment.create({
-            data: {
-                unitCode: body.unitCode,
-                nameAr: body.nameAr || `الشقة ${body.apartmentNumber || ''}`,
-                nameEn: body.nameEn || null,
-                buildingName: body.buildingName || null,
-                floor: body.floor ?? null,
-                area: body.area ?? null,
-                buildingArea: body.buildingArea ?? null,
-                roofArea: body.roofArea ?? null,
-                bedrooms: body.bedrooms ?? null,
-                bathrooms: body.bathrooms ?? null,
-                maidBathroom: body.maidBathroom ?? null,
-                price: body.price ?? null,
-                status: body.status || 'available',
-                projectId: body.projectId,
-                type: body.type || 'شقة',
-                apartmentNumber: body.apartmentNumber ?? null,
-                image: body.image || null,
-                livingRoom: body.livingRoom ?? 0,
-                kitchen: body.kitchen ?? 0,
-                driverRoom: body.driverRoom ?? 0,
-                maidRoom: body.maidRoom ?? 0,
-                balcony: body.balcony ?? 0,
-                parking: body.parking ?? 0,
-                garden: body.garden ?? 0,
-                entrance: body.entrance ?? 0,
-                majlis: body.majlis ?? 0,
-                storage: body.storage ?? 0,
-                roof: body.roof ?? 0,
-                laundry: body.laundry ?? 0,
-                direction: body.direction || null,
-                view: body.view || null,
-            },
-        });
-        return NextResponse.json({ apartment });
-    } catch (error: any) {
-        console.error('Error creating apartment:', error);
-        if (error.code === 'P2002') {
-            return NextResponse.json(
-                { error: 'كود الوحدة ده مستخدم بالفعل في نفس المشروع' },
-                { status: 409 }
-            );
-        }
-        return NextResponse.json({ error: 'Failed to create' }, { status: 500 });
+  try {
+    const body = await request.json();
+
+    const errors = validateApartment(body, false);
+    if (errors.length > 0) {
+      return NextResponse.json({ error: errors.join(' - ') }, { status: 400 });
     }
+
+    const apartment = await prisma.apartment.create({
+      data: {
+        unitCode: body.unitCode,
+        buildingName: body.buildingName || null,
+        floor: body.floor || null,
+        area: body.area ?? null,
+        buildingArea: body.buildingArea ?? null,
+        roofArea: body.roofArea ?? null,
+        bedrooms:
+          body.bedrooms === '' || body.bedrooms == null
+            ? null
+            : Number(body.bedrooms),
+        bathrooms:
+          body.bathrooms === '' || body.bathrooms == null
+            ? null
+            : Number(body.bathrooms),
+        maidBathroom: body.maidBathroom ?? 0,
+        price: Number(body.price),
+        status: body.status || 'available',
+        projectId: body.projectId,
+        type: body.type,
+        image: body.image || null,
+        livingRoom: body.livingRoom ?? 0,
+        kitchen: body.kitchen ?? 0,
+        driverRoom: body.driverRoom ?? 0,
+        maidRoom: body.maidRoom ?? 0,
+        balcony: body.balcony ?? 0,
+        parking: body.parking ?? 0,
+        garden: body.garden ?? 0,
+        entrance: body.entrance ?? 0,
+        majlis: body.majlis ?? 0,
+        storage: body.storage ?? 0,
+        roof: body.roof ?? 0,
+        laundry: body.laundry ?? 0,
+        direction: body.direction || null,
+        view: body.view || null,
+      },
+    });
+    return NextResponse.json({ apartment });
+  } catch (error: any) {
+    console.error('Error creating apartment:', error);
+    if (error.code === 'P2002') {
+      return NextResponse.json(
+        { error: 'كود الوحدة ده مستخدم بالفعل في نفس المشروع' },
+        { status: 409 },
+      );
+    }
+    return NextResponse.json({ error: 'Failed to create' }, { status: 500 });
+  }
 }
