@@ -2718,6 +2718,16 @@ img {
 .admin-btn-primary:hover {
   background: #1f2937;
 }
+.admin-btn-gold {
+  background: #c9a227;
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(201, 162, 39, 0.35);
+}
+.admin-btn-gold:hover {
+  background: #a8861e;
+  box-shadow: 0 2px 6px rgba(201, 162, 39, 0.45);
+  transform: translateY(-1px);
+}
 .admin-btn-danger {
   background: #dc2626;
   color: #fff;
@@ -2839,20 +2849,19 @@ img {
 /* -- Image Upload Slot -- */
 .admin-upload-slot {
   border: 2px dashed #d1d5db;
-  border-radius: 8px;
-  padding: 16px;
+  border-radius: 10px;
+  padding: 24px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 12px;
-  transition: border-color 0.2s;
+  max-width: 360px;
+  transition: border-color 0.2s, background 0.2s;
 }
 .admin-upload-slot:hover {
   border-color: #c9a227;
-}
-.admin-upload-slot input[type="file"] {
-  font-size: 12px;
+  background: #fdfaf3;
 }
 .admin-upload-slot img {
   max-width: 100%;
@@ -3133,4 +3142,3 @@ img {
         color: #c9a227;
     }
 }
-
