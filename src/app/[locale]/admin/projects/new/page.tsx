@@ -116,6 +116,8 @@ export default function NewProjectPage() {
     elevatorsCount: 0,
     isFeatured: 0,
     sortOrder: 0,
+     sheetUrl: "",
+    sheetTabName: "",
   });
 
   // Image uploads (6 slots)

@@ -84,13 +84,13 @@ const ROOM_FIELDS = [
   { key: "bathrooms", labelAr: "غرف الحمام", labelEn: "Bathrooms" },
   {
     key: "maidBathroom",
-    labelAr: "غرفة حمام الخادمة",
+    labelAr: "حمام الخادمة",
     labelEn: "Maid Bathroom",
   },
-  { key: "balcony", labelAr: "بلكونة", labelEn: "Balcony" },
+  { key: "balcony", labelAr: "شرفة", labelEn: "Balcony" },
   { key: "parking", labelAr: "مواقف سيارات", labelEn: "Parking" },
   { key: "maidRoom", labelAr: "غرفة الخادمة", labelEn: "Maid Room" },
-  { key: "storage", labelAr: "مستودع", labelEn: "Storage" },
+  { key: "storage", labelAr: "مخزن", labelEn: "Storage" },
   { key: "laundry", labelAr: "غرفة غسيل", labelEn: "Laundry" },
 ] as const;
 
