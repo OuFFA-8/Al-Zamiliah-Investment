@@ -28,17 +28,10 @@ interface Apartment {
   price: number | null;
   status: string;
   image: string | null;
-  livingRoom: number | null;
-  kitchen: number | null;
-  driverRoom: number | null;
   maidRoom: number | null;
   balcony: number | null;
   parking: number | null;
-  entrance: number | null;
-  majlis: number | null;
   storage: number | null;
-  garden: number | null;
-  roof: number | null;
   laundry: number | null;
   direction: string | null;
   view: string | null;
@@ -124,13 +117,7 @@ function AptFeatures({ apt, isRTL }: { apt: Apartment; isRTL: boolean }) {
     { v: apt.maidBathroom, ar: "حمام خادمة", en: "Maid Bathroom" },
     { v: apt.storage, ar: "مخزن", en: "Storage" },
     { v: apt.laundry, ar: "غسيل", en: "Laundry" },
-    { v: apt.kitchen, ar: "المطبخ", en: "Kitchen" },
-    { v: apt.majlis, ar: "مجلس", en: "Majlis" },
-    { v: apt.livingRoom, ar: "صالة عائلية", en: "Living Room" },
-    { v: apt.entrance, ar: "مدخل خاص", en: "Private Entrance" },
-    { v: apt.garden, ar: "حديقة", en: "Garden" },
-    { v: apt.driverRoom, ar: "غرفة سائق", en: "Driver Room" },
-    { v: apt.roof, ar: "سطح خاص", en: "Private Roof" },
+  
   ].filter((i) => i.v && i.v > 0);
 
   // حقول نصية: تتعرض دايمًا لو موجودة
