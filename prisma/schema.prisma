@@ -117,17 +117,10 @@ model Apartment {
   status          String   @default("available")
  type            String   @default("شقة")
   image           String?
-  livingRoom      Int?     @default(0) @map("living_room")
-  kitchen         Int?     @default(0)
-  driverRoom      Int?     @default(0) @map("driver_room")
   maidRoom        Int?     @default(0) @map("maid_room")
   balcony         Int?     @default(0)
   parking         Int?     @default(0)
-  garden          Int?     @default(0)
-  entrance        Int?     @default(0)
-  majlis          Int?     @default(0)
   storage         Int?     @default(0)
-  roof            Int?     @default(0)
   laundry         Int?     @default(0)
   direction       String?
   view            String?
