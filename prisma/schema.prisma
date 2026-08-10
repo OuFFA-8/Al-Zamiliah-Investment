@@ -88,6 +88,15 @@ model Project {
   updatedAt       DateTime      @updatedAt @map("updated_at")
   qrCodeLeads QrCodeLeadProject[]
 
+  // Google Sheet sync
+  sheetUrl          String?   @map("sheet_url")
+  sheetTabName      String?   @map("sheet_tab_name")
+  sheetWebhookSecret String?  @map("sheet_webhook_secret")
+  sheetLastSyncedAt DateTime? @map("sheet_last_synced_at")
+  sheetSyncStatus   String?   @default("idle") @map("sheet_sync_status") // idle | syncing | success | error
+  sheetSyncError    String?   @map("sheet_sync_error") @db.Text
+  sheetLastSummary  String?   @map("sheet_last_summary") // e.g. "created: 2, updated: 5, deleted: 1"
+
   @@map("projects")
 }
 
@@ -122,6 +131,7 @@ model Apartment {
   laundry         Int?     @default(0)
   direction       String?
   view            String?
+  source          String   @default("manual") // "manual" | "sheet" - controls sync delete safety
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 

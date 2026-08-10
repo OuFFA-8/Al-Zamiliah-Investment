@@ -138,39 +138,39 @@ async function main() {
     const elafBldgs = ['Buildings A', 'Buildings B', 'Buildings C', 'Buildings D', 'Buildings E'];
     const elafUnits = [
         [
-            { nameAr: 'شقة A-101', nameEn: 'Apt A-101', floor: 1, area: 85, bedrooms: 2, bathrooms: 2, status: 'sold' },
-            { nameAr: 'شقة A-102', nameEn: 'Apt A-102', floor: 1, area: 95, bedrooms: 2, bathrooms: 2, status: 'sold' },
-            { nameAr: 'شقة A-201', nameEn: 'Apt A-201', floor: 2, area: 85, bedrooms: 2, bathrooms: 2, status: 'available' },
-            { nameAr: 'شقة A-202', nameEn: 'Apt A-202', floor: 2, area: 110, bedrooms: 3, bathrooms: 2, status: 'available' },
-            { nameAr: 'شقة A-301', nameEn: 'Apt A-301', floor: 3, area: 85, bedrooms: 2, bathrooms: 2, status: 'available' },
-            { nameAr: 'شقة A-302', nameEn: 'Apt A-302', floor: 3, area: 110, bedrooms: 3, bathrooms: 2, status: 'sold' },
-            { nameAr: 'شقة A-401', nameEn: 'Apt A-401', floor: 4, area: 85, bedrooms: 2, bathrooms: 2, status: 'available' },
-            { nameAr: 'شقة A-402', nameEn: 'Apt A-402', floor: 4, area: 130, bedrooms: 3, bathrooms: 3, status: 'available' },
-            { nameAr: 'شقة A-501', nameEn: 'Apt A-501', floor: 5, area: 140, bedrooms: 4, bathrooms: 3, status: 'available' },
+            { unitCode: 'A-101', type: 'شقة', floor: '1', area: 85, bedrooms: 2, bathrooms: 2, status: 'sold' },
+            { unitCode: 'A-102', type: 'شقة', floor: '1', area: 95, bedrooms: 2, bathrooms: 2, status: 'sold' },
+            { unitCode: 'A-201', type: 'شقة', floor: '2', area: 85, bedrooms: 2, bathrooms: 2, status: 'available' },
+            { unitCode: 'A-202', type: 'شقة', floor: '2', area: 110, bedrooms: 3, bathrooms: 2, status: 'available' },
+            { unitCode: 'A-301', type: 'شقة', floor: '3', area: 85, bedrooms: 2, bathrooms: 2, status: 'available' },
+            { unitCode: 'A-302', type: 'شقة', floor: '3', area: 110, bedrooms: 3, bathrooms: 2, status: 'sold' },
+            { unitCode: 'A-401', type: 'شقة', floor: '4', area: 85, bedrooms: 2, bathrooms: 2, status: 'available' },
+            { unitCode: 'A-402', type: 'شقة', floor: '4', area: 130, bedrooms: 3, bathrooms: 3, status: 'available' },
+            { unitCode: 'A-501', type: 'شقة', floor: '5', area: 140, bedrooms: 4, bathrooms: 3, status: 'available' },
         ],
         [
-            { nameAr: 'شقة B-101', nameEn: 'Apt B-101', floor: 1, area: 90, bedrooms: 2, bathrooms: 2, status: 'sold' },
-            { nameAr: 'شقة B-102', nameEn: 'Apt B-102', floor: 1, area: 100, bedrooms: 3, bathrooms: 2, status: 'available' },
-            { nameAr: 'شقة B-201', nameEn: 'Apt B-201', floor: 2, area: 90, bedrooms: 2, bathrooms: 2, status: 'available' },
-            { nameAr: 'شقة B-202', nameEn: 'Apt B-202', floor: 2, area: 100, bedrooms: 3, bathrooms: 2, status: 'sold' },
-            { nameAr: 'شقة B-301', nameEn: 'Apt B-301', floor: 3, area: 120, bedrooms: 3, bathrooms: 2, status: 'available' },
+            { unitCode: 'B-101', type: 'شقة', floor: '1', area: 90, bedrooms: 2, bathrooms: 2, status: 'sold' },
+            { unitCode: 'B-102', type: 'شقة', floor: '1', area: 100, bedrooms: 3, bathrooms: 2, status: 'available' },
+            { unitCode: 'B-201', type: 'شقة', floor: '2', area: 90, bedrooms: 2, bathrooms: 2, status: 'available' },
+            { unitCode: 'B-202', type: 'شقة', floor: '2', area: 100, bedrooms: 3, bathrooms: 2, status: 'sold' },
+            { unitCode: 'B-301', type: 'شقة', floor: '3', area: 120, bedrooms: 3, bathrooms: 2, status: 'available' },
         ],
         [
-            { nameAr: 'شقة C-101', nameEn: 'Apt C-101', floor: 1, area: 80, bedrooms: 2, bathrooms: 1, status: 'sold' },
-            { nameAr: 'شقة C-102', nameEn: 'Apt C-102', floor: 1, area: 95, bedrooms: 2, bathrooms: 2, status: 'available' },
-            { nameAr: 'شقة C-201', nameEn: 'Apt C-201', floor: 2, area: 80, bedrooms: 2, bathrooms: 1, status: 'available' },
-            { nameAr: 'شقة C-202', nameEn: 'Apt C-202', floor: 2, area: 95, bedrooms: 2, bathrooms: 2, status: 'sold' },
-            { nameAr: 'شقة C-301', nameEn: 'Apt C-301', floor: 3, area: 105, bedrooms: 3, bathrooms: 2, status: 'available' },
+            { unitCode: 'C-101', type: 'شقة', floor: '1', area: 80, bedrooms: 2, bathrooms: 1, status: 'sold' },
+            { unitCode: 'C-102', type: 'شقة', floor: '1', area: 95, bedrooms: 2, bathrooms: 2, status: 'available' },
+            { unitCode: 'C-201', type: 'شقة', floor: '2', area: 80, bedrooms: 2, bathrooms: 1, status: 'available' },
+            { unitCode: 'C-202', type: 'شقة', floor: '2', area: 95, bedrooms: 2, bathrooms: 2, status: 'sold' },
+            { unitCode: 'C-301', type: 'شقة', floor: '3', area: 105, bedrooms: 3, bathrooms: 2, status: 'available' },
         ],
         [
-            { nameAr: 'شقة D-101', nameEn: 'Apt D-101', floor: 1, area: 85, bedrooms: 2, bathrooms: 2, status: 'sold' },
-            { nameAr: 'شقة D-201', nameEn: 'Apt D-201', floor: 2, area: 85, bedrooms: 2, bathrooms: 2, status: 'available' },
-            { nameAr: 'شقة D-301', nameEn: 'Apt D-301', floor: 3, area: 110, bedrooms: 3, bathrooms: 2, status: 'available' },
+            { unitCode: 'D-101', type: 'شقة', floor: '1', area: 85, bedrooms: 2, bathrooms: 2, status: 'sold' },
+            { unitCode: 'D-201', type: 'شقة', floor: '2', area: 85, bedrooms: 2, bathrooms: 2, status: 'available' },
+            { unitCode: 'D-301', type: 'شقة', floor: '3', area: 110, bedrooms: 3, bathrooms: 2, status: 'available' },
         ],
         [
-            { nameAr: 'شقة E-101', nameEn: 'Apt E-101', floor: 1, area: 90, bedrooms: 2, bathrooms: 2, status: 'sold' },
-            { nameAr: 'شقة E-201', nameEn: 'Apt E-201', floor: 2, area: 90, bedrooms: 2, bathrooms: 2, status: 'available' },
-            { nameAr: 'شقة E-301', nameEn: 'Apt E-301', floor: 3, area: 115, bedrooms: 3, bathrooms: 2, status: 'available' },
+            { unitCode: 'E-101', type: 'شقة', floor: '1', area: 90, bedrooms: 2, bathrooms: 2, status: 'sold' },
+            { unitCode: 'E-201', type: 'شقة', floor: '2', area: 90, bedrooms: 2, bathrooms: 2, status: 'available' },
+            { unitCode: 'E-301', type: 'شقة', floor: '3', area: 115, bedrooms: 3, bathrooms: 2, status: 'available' },
         ],
     ];
     for (let i = 0; i < elafBldgs.length; i++) {
@@ -181,20 +181,20 @@ async function main() {
 
     // --- Al Salam Hills (id=31): 2 buildings, 9 units (from original site screenshot) ---
     const salamUnitsA = [
-        { nameAr: 'دور', nameEn: 'Floor Unit', floor: 1, area: 200, bedrooms: 3, bathrooms: 3, price: 1100000, status: 'available' },
-        { nameAr: 'دور', nameEn: 'Floor Unit', floor: 2, area: 200, bedrooms: 3, bathrooms: 3, price: 1200000, status: 'sold' },
-        { nameAr: 'شقة', nameEn: 'Apartment', floor: 3, area: 85, bedrooms: 2, bathrooms: 2, price: 550000, status: 'sold' },
-        { nameAr: 'شقة', nameEn: 'Apartment', floor: 3, area: null, bedrooms: null, bathrooms: null, price: null, status: 'sold' },
-        { nameAr: 'شقة', nameEn: 'Apartment', floor: 4, area: null, bedrooms: null, bathrooms: null, price: null, status: 'sold' },
-        { nameAr: 'شقة', nameEn: 'Apartment', floor: 4, area: null, bedrooms: null, bathrooms: null, price: null, status: 'sold' },
+        { unitCode: 'A-F1', type: 'أخرى', floor: '1', area: 200, bedrooms: 3, bathrooms: 3, price: 1100000, status: 'available' },
+        { unitCode: 'A-F2', type: 'أخرى', floor: '2', area: 200, bedrooms: 3, bathrooms: 3, price: 1200000, status: 'sold' },
+        { unitCode: 'A-301', type: 'شقة', floor: '3', area: 85, bedrooms: 2, bathrooms: 2, price: 550000, status: 'sold' },
+        { unitCode: 'A-302', type: 'شقة', floor: '3', area: null, bedrooms: null, bathrooms: null, price: null, status: 'sold' },
+        { unitCode: 'A-401', type: 'شقة', floor: '4', area: null, bedrooms: null, bathrooms: null, price: null, status: 'sold' },
+        { unitCode: 'A-402', type: 'شقة', floor: '4', area: null, bedrooms: null, bathrooms: null, price: null, status: 'sold' },
     ];
     for (const u of salamUnitsA) {
         await prisma.apartment.create({ data: { projectId: alSalamHills.id, buildingName: 'Buildings A', ...u } });
     }
     const salamUnitsB = [
-        { nameAr: 'دور', nameEn: 'Floor Unit', floor: 1, area: 200, bedrooms: 3, bathrooms: 3, price: 1100000, status: 'available' },
-        { nameAr: 'دور', nameEn: 'Floor Unit', floor: 2, area: 200, bedrooms: 3, bathrooms: 3, price: 1200000, status: 'sold' },
-        { nameAr: 'شقة', nameEn: 'Apartment', floor: 3, area: 85, bedrooms: 2, bathrooms: 2, price: 550000, status: 'sold' },
+        { unitCode: 'B-F1', type: 'أخرى', floor: '1', area: 200, bedrooms: 3, bathrooms: 3, price: 1100000, status: 'available' },
+        { unitCode: 'B-F2', type: 'أخرى', floor: '2', area: 200, bedrooms: 3, bathrooms: 3, price: 1200000, status: 'sold' },
+        { unitCode: 'B-301', type: 'شقة', floor: '3', area: 85, bedrooms: 2, bathrooms: 2, price: 550000, status: 'sold' },
     ];
     for (const u of salamUnitsB) {
         await prisma.apartment.create({ data: { projectId: alSalamHills.id, buildingName: 'Buildings B', ...u } });
@@ -206,8 +206,8 @@ async function main() {
             await prisma.apartment.create({
                 data: {
                     projectId: tejanComplex.id, buildingName: bldg,
-                    nameAr: `شقة ${bldg.slice(-1)}-${floor}01`, nameEn: `Apt ${bldg.slice(-1)}-${floor}01`,
-                    floor, area: 85 + (floor * 10), bedrooms: floor === 3 ? 3 : 2, bathrooms: 2,
+                    unitCode: `${bldg.slice(-1)}-${floor}01`, type: 'شقة',
+                    floor: String(floor), area: 85 + (floor * 10), bedrooms: floor === 3 ? 3 : 2, bathrooms: 2,
                     status: 'available',
                 },
             });
@@ -219,7 +219,7 @@ async function main() {
         await prisma.apartment.create({
             data: {
                 projectId: ivoryCompound.id, buildingName: 'Main Building',
-                nameAr: `فيلا ${i}`, nameEn: `Villa ${i}`, floor: 1,
+                unitCode: `V-${i}`, type: 'فيلا', floor: '1',
                 area: 200 + (i * 20), bedrooms: 4, bathrooms: 3,
                 status: i <= 2 ? 'sold' : 'available',
             },
@@ -228,7 +228,7 @@ async function main() {
 
     // --- Niloufar Compound (id=37) ---
     await prisma.apartment.create({
-        data: { projectId: niloufarCompound.id, buildingName: 'Buildings A', nameAr: 'الوحدة الرئيسية', nameEn: 'Main Unit', floor: 1, area: 7500, status: 'available' },
+        data: { projectId: niloufarCompound.id, buildingName: 'Buildings A', unitCode: 'MAIN-1', type: 'أخرى', floor: '1', area: 7500, status: 'available' },
     });
 
     console.log('✅ Apartments seeded');
