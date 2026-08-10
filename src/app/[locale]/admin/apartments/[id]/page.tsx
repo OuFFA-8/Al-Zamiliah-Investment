@@ -15,11 +15,8 @@ interface Project {
 interface Apartment {
     id: number;
     unitCode: string | null;
-    nameAr: string;
-    nameEn: string | null;
     buildingName: string | null;
-    apartmentNumber: number | null;
-    floor: number | null;
+    floor: string | null;
     area: number | null;
     buildingArea: number | null;
     roofArea: number | null;
@@ -49,11 +46,8 @@ interface Apartment {
 /* ── Empty form state ── */
 const emptyForm = (): Omit<Apartment, 'id'> => ({
     unitCode: '',
-    nameAr: '',
-    nameEn: '',
     buildingName: '',
-    apartmentNumber: null,
-    floor: null,
+    floor: '',
     area: null,
     buildingArea: null,
     roofArea: null,
@@ -82,28 +76,42 @@ const emptyForm = (): Omit<Apartment, 'id'> => ({
 
 /* ── Status options ── */
 const STATUS_OPTIONS = [
-    { value: 'available', labelAr: 'متاح', labelEn: 'Available', color: '#059669' },
-    { value: 'reserved', labelAr: 'محجوز', labelEn: 'Reserved', color: '#d97706' },
-    { value: 'sold',     labelAr: 'مباع',  labelEn: 'Sold',     color: '#dc2626' },
+    { value: 'available', labelAr: 'متاح',  labelEn: 'Available', color: '#059669' },
+    { value: 'reserved',  labelAr: 'محجوز', labelEn: 'Reserved',  color: '#d97706' },
+    { value: 'sold',      labelAr: 'مباع',  labelEn: 'Sold',      color: '#dc2626' },
+    { value: 'محجوب',     labelAr: 'محجوب', labelEn: 'Hidden',    color: '#6b7280' },
 ];
 
-/* ── Feature toggles ── */
-const FEATURES = [
-    { key: 'livingRoom',  labelAr: 'غرفة معيشة', labelEn: 'Living Room',   icon: '🛋️' },
-    { key: 'kitchen',     labelAr: 'مطبخ',        labelEn: 'Kitchen',       icon: '🍳' },
-    { key: 'driverRoom',  labelAr: 'غرفة سائق',   labelEn: 'Driver Room',   icon: '🚗' },
-    { key: 'maidRoom',    labelAr: 'غرفة عاملة',  labelEn: 'Maid Room',     icon: '🧹' },
-    { key: 'balcony',     labelAr: 'بلكونة',      labelEn: 'Balcony',       icon: '🏗️' },
-    { key: 'parking',     labelAr: 'موقف سيارة',  labelEn: 'Parking',       icon: '🅿️' },
-    { key: 'garden',      labelAr: 'حديقة',       labelEn: 'Garden',        icon: '🌿' },
-    { key: 'entrance',    labelAr: 'مدخل خاص',    labelEn: 'Private Entrance', icon: '🚪' },
-    { key: 'majlis',      labelAr: 'مجلس',         labelEn: 'Majlis',        icon: '🏠' },
-    { key: 'storage',     labelAr: 'مستودع',      labelEn: 'Storage',       icon: '📦' },
-    { key: 'roof',        labelAr: 'روف',          labelEn: 'Roof',          icon: '🏔️' },
-    { key: 'laundry',     labelAr: 'غرفة غسيل',   labelEn: 'Laundry',       icon: '👕' },
+/* ── Numeric room / facility fields (replaces the old on/off toggle buttons) ── */
+const ROOM_FIELDS = [
+    { key: 'bedrooms',    labelAr: 'غرف النوم',      labelEn: 'Bedrooms' },
+    { key: 'bathrooms',   labelAr: 'غرف الحمام',   labelEn: 'Bathrooms' },
+    { key: 'maidBathroom',labelAr: 'غرفة حمام الخادمة', labelEn: 'Maid Bathroom' },
+    { key: 'balcony',     labelAr: 'بلكونة',         labelEn: 'Balcony' },
+    { key: 'parking',     labelAr: 'مواقف سيارات',   labelEn: 'Parking' },
+    { key: 'maidRoom',    labelAr: 'غرفة الخادمة',     labelEn: 'Maid Room' },
+    { key: 'storage',     labelAr: 'مستودع',         labelEn: 'Storage' },
+    { key: 'laundry',     labelAr: 'غرفة غسيل',      labelEn: 'Laundry' },
+    { key: 'livingRoom',  labelAr: 'غرفة معيشة',     labelEn: 'Living Room' },
+    { key: 'kitchen',     labelAr: 'مطبخ',            labelEn: 'Kitchen' },
+    { key: 'driverRoom',  labelAr: 'غرفة سائق',      labelEn: 'Driver Room' },
+    { key: 'garden',      labelAr: 'حديقة',          labelEn: 'Garden' },
+    { key: 'entrance',    labelAr: 'مدخل خاص',       labelEn: 'Private Entrance' },
+    { key: 'majlis',      labelAr: 'مجلس',            labelEn: 'Majlis' },
+    { key: 'roof',        labelAr: 'روف',             labelEn: 'Roof' },
 ] as const;
 
-type FeatureKey = typeof FEATURES[number]['key'];
+type RoomFieldKey = typeof ROOM_FIELDS[number]['key'];
+
+/* Fields that should default to null (unspecified) instead of 0 when empty */
+const NULLABLE_ROOM_FIELDS: RoomFieldKey[] = ['bedrooms', 'bathrooms'];
+
+/* ── Generated display title (replaces the old stored nameAr/nameEn) ── */
+function unitTitle(apt: { type: string | null; unitCode: string | null }, isRTL: boolean): string {
+    const type = apt.type || (isRTL ? 'وحدة' : 'Unit');
+    const code = apt.unitCode || '—';
+    return `${type} ${code}`;
+}
 
 /* ════════════════════════════════════════════ */
 export default function ApartmentsDetailPage() {
@@ -124,6 +132,8 @@ export default function ApartmentsDetailPage() {
     const [saveError,  setSaveError]  = useState('');
     const [deleteId,   setDeleteId]   = useState<number | null>(null);
     const [uploadingImg, setUploadingImg] = useState(false);
+    const [imageMode,  setImageMode]  = useState<'upload' | 'url'>('upload');
+    const [imageError, setImageError] = useState('');
     const [filterBuilding, setFilterBuilding] = useState('');
     const [filterStatus,   setFilterStatus]   = useState('');
     const [searchUnit,     setSearchUnit]      = useState('');
@@ -170,6 +180,8 @@ export default function ApartmentsDetailPage() {
         setEditTarget(null);
         setForm(emptyForm());
         setSaveError('');
+        setImageError('');
+        setImageMode('upload');
         setShowForm(true);
         setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);
     };
@@ -179,11 +191,8 @@ export default function ApartmentsDetailPage() {
         setEditTarget(apt);
         setForm({
             unitCode:       apt.unitCode       ?? '',
-            nameAr:         apt.nameAr,
-            nameEn:         apt.nameEn         ?? '',
             buildingName:   apt.buildingName   ?? '',
-            apartmentNumber: apt.apartmentNumber ?? null,
-            floor:          apt.floor          ?? null,
+            floor:          apt.floor          ?? '',
             area:           apt.area           ?? null,
             buildingArea:   apt.buildingArea   ?? null,
             roofArea:       apt.roofArea       ?? null,
@@ -210,6 +219,9 @@ export default function ApartmentsDetailPage() {
             view:           apt.view           ?? '',
         });
         setSaveError('');
+        setImageError('');
+        // A locally-uploaded image always starts with "/", an external link starts with http(s)://
+        setImageMode(apt.image && /^https?:\/\//i.test(apt.image) ? 'url' : 'upload');
         setShowForm(true);
         setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);
     };
@@ -221,29 +233,51 @@ export default function ApartmentsDetailPage() {
     const numField = (key: string, raw: string) =>
         setField(key, raw === '' ? null : Number(raw));
 
-    const toggleFeature = (key: FeatureKey) =>
-        setForm(prev => ({ ...prev, [key]: prev[key] ? 0 : 1 }));
-
     /* ── Image upload ── */
     const handleImageUpload = async (file: File) => {
         setUploadingImg(true);
+        setImageError('');
         const fd = new FormData();
         fd.append('file', file);
         try {
             const res  = await fetch('/api/upload', { method: 'POST', body: fd });
             const data = await res.json();
-            if (data.url) setField('image', data.url);
+            if (!res.ok || !data.url) {
+                setImageError(
+                    data.error ||
+                    (isRTL ? 'فشل رفع الصورة، حاول تاني' : 'Image upload failed, try again')
+                );
+            } else {
+                setField('image', data.url);
+            }
         } catch {
-            setSaveError(isRTL ? 'فشل رفع الصورة' : 'Image upload failed');
+            setImageError(isRTL ? 'فشل رفع الصورة، تحقق من الاتصال' : 'Upload failed, check your connection');
         }
         setUploadingImg(false);
     };
 
+    /* A pasted URL must actually be a link (or a path served by this app) —
+       not a local file path like "C:\Users\...\pic.jpg" copied from Explorer. */
+    const isValidImageUrl = (val: string) =>
+        !val || /^https?:\/\//i.test(val) || val.startsWith('/');
+
     /* ── Save (create / update) ── */
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!form.nameAr.trim()) {
-            setSaveError(isRTL ? 'الاسم العربي مطلوب' : 'Arabic name is required');
+        if (!form.unitCode || !String(form.unitCode).trim()) {
+            setSaveError(isRTL ? 'كود الوحدة مطلوب' : 'Unit code is required');
+            return;
+        }
+        if (!form.type || !String(form.type).trim()) {
+            setSaveError(isRTL ? 'نوع الوحدة مطلوب' : 'Unit type is required');
+            return;
+        }
+        if (form.price === null || form.price === undefined || isNaN(Number(form.price))) {
+            setSaveError(isRTL ? 'السعر مطلوب' : 'Price is required');
+            return;
+        }
+        if (form.image && !isValidImageUrl(form.image)) {
+            setSaveError(isRTL ? 'رابط الصورة غير صحيح' : 'The image URL is not valid');
             return;
         }
         setSaving(true);
@@ -293,8 +327,7 @@ export default function ApartmentsDetailPage() {
         const matchStatus   = !filterStatus   || a.status === filterStatus;
         const matchSearch   = !searchUnit     ||
             (a.unitCode   || '').toLowerCase().includes(searchUnit.toLowerCase()) ||
-            (a.nameAr     || '').includes(searchUnit) ||
-            (a.nameEn     || '').toLowerCase().includes(searchUnit.toLowerCase());
+            (a.type       || '').includes(searchUnit);
         return matchBuilding && matchStatus && matchSearch;
     });
 
@@ -404,20 +437,25 @@ export default function ApartmentsDetailPage() {
                         <div className="admin-field">
                             <label>
                                 {isRTL ? 'كود الوحدة' : 'Unit Code'}
-                                <span className="optional"> (optional)</span>
+                                <span style={{ color: '#dc2626' }}> *</span>
                             </label>
                             <input
                                 type="text"
                                 value={form.unitCode ?? ''}
                                 onChange={e => setField('unitCode', e.target.value || null)}
                                 placeholder="e.g. A-101"
+                                required
                             />
                         </div>
                         <div className="admin-field">
-                            <label>{isRTL ? 'النوع' : 'Type'}</label>
+                            <label>
+                                {isRTL ? 'النوع' : 'Type'}
+                                <span style={{ color: '#dc2626' }}> *</span>
+                            </label>
                             <select
                                 value={form.type ?? ''}
                                 onChange={e => setField('type', e.target.value)}
+                                required
                             >
                                 <option value="شقة">{isRTL ? 'شقة' : 'Apartment'}</option>
                                 <option value="فيلا">{isRTL ? 'فيلا' : 'Villa'}</option>
@@ -428,33 +466,16 @@ export default function ApartmentsDetailPage() {
                                 <option value="أخرى">{isRTL ? 'أخرى' : 'Other'}</option>
                             </select>
                         </div>
-                        <div className="admin-field">
-                            <label>
-                                {isRTL ? 'الاسم (عربي)' : 'Name (Arabic)'}
-                                <span style={{ color: '#dc2626' }}> *</span>
-                            </label>
-                            <input
-                                type="text"
-                                value={form.nameAr}
-                                onChange={e => setField('nameAr', e.target.value)}
-                                required
-                                placeholder={isRTL ? 'مثال: شقة 101' : 'e.g. شقة 101'}
-                                dir="rtl"
-                            />
-                        </div>
-                        <div className="admin-field">
-                            <label>
-                                {isRTL ? 'الاسم (إنجليزي)' : 'Name (English)'}
-                                <span className="optional"> (optional)</span>
-                            </label>
-                            <input
-                                type="text"
-                                value={form.nameEn ?? ''}
-                                onChange={e => setField('nameEn', e.target.value || null)}
-                                placeholder="e.g. Apartment 101"
-                                dir="ltr"
-                            />
-                        </div>
+                    </div>
+                    <div style={{
+                        background: '#eff6ff', color: '#1e40af',
+                        padding: '10px 14px', borderRadius: '8px',
+                        marginTop: '-14px', marginBottom: '24px',
+                        fontSize: '12px',
+                    }}>
+                        {isRTL
+                            ? `ℹ️ العنوان المعروض للوحدة سيكون تلقائيًا: "${unitTitle({ type: form.type, unitCode: form.unitCode }, true)}"`
+                            : `ℹ️ The unit's display title will be generated automatically: "${unitTitle({ type: form.type, unitCode: form.unitCode }, false)}"`}
                     </div>
 
                     {/* ─ 2: Status ─ */}
@@ -482,12 +503,24 @@ export default function ApartmentsDetailPage() {
                             </button>
                         ))}
                     </div>
+                    {form.status === 'محجوب' && (
+                        <div style={{
+                            background: '#f3f4f6', color: '#4b5563',
+                            padding: '10px 14px', borderRadius: '8px',
+                            marginTop: '-14px', marginBottom: '24px',
+                            fontSize: '12px',
+                        }}>
+                            {isRTL
+                                ? 'ℹ️ الوحدات "محجوبة" لا تظهر إطلاقًا في صفحة المشروع العامة للزوار.'
+                                : 'ℹ️ "Hidden" units never appear on the public project page.'}
+                        </div>
+                    )}
 
                     {/* ─ 3: Location ─ */}
                     <SectionTitle isRTL={isRTL} ar="📍 الموقع داخل المشروع" en="📍 Location within Project" />
                     <div className="admin-form-grid" style={{ marginBottom: '24px' }}>
                         <div className="admin-field">
-                            <label>{isRTL ? 'اسم المبنى' : 'Building Name'}</label>
+                            <label>{isRTL ? 'اسم المبنى (الزون)' : 'Building Name (Zone)'}</label>
                             <input
                                 type="text"
                                 value={form.buildingName ?? ''}
@@ -500,22 +533,12 @@ export default function ApartmentsDetailPage() {
                             </datalist>
                         </div>
                         <div className="admin-field">
-                            <label>{isRTL ? 'رقم الشقة' : 'Apartment Number'}</label>
-                            <input
-                                type="number"
-                                value={form.apartmentNumber ?? ''}
-                                onChange={e => numField('apartmentNumber', e.target.value)}
-                                placeholder="101"
-                                min={0}
-                            />
-                        </div>
-                        <div className="admin-field">
                             <label>{isRTL ? 'الطابق' : 'Floor'}</label>
                             <input
-                                type="number"
+                                type="text"
                                 value={form.floor ?? ''}
-                                onChange={e => numField('floor', e.target.value)}
-                                placeholder="1"
+                                onChange={e => setField('floor', e.target.value || null)}
+                                placeholder={isRTL ? 'مثال: الأول، الميزانين' : 'e.g. 1, Mezzanine'}
                             />
                         </div>
                         <div className="admin-field">
@@ -533,6 +556,7 @@ export default function ApartmentsDetailPage() {
                                 <option value="شمال غرب">{isRTL ? 'شمال غرب' : 'North West'}</option>
                                 <option value="جنوب شرق">{isRTL ? 'جنوب شرق' : 'South East'}</option>
                                 <option value="جنوب غرب">{isRTL ? 'جنوب غرب' : 'South West'}</option>
+                                <option value="وسط">{isRTL ? 'وسط' : 'Center'}</option>
                             </select>
                         </div>
                         <div className="admin-field">
@@ -578,98 +602,62 @@ export default function ApartmentsDetailPage() {
                         </div>
                     </div>
 
-                    {/* ─ 5: Rooms ─ */}
-                    <SectionTitle isRTL={isRTL} ar="🛏️ الغرف" en="🛏️ Rooms" />
-                    <div className="admin-form-grid" style={{ marginBottom: '24px' }}>
-                        <div className="admin-field">
-                            <label>{isRTL ? 'غرف النوم' : 'Bedrooms'}</label>
-                            <input
-                                type="number" min={0}
-                                value={form.bedrooms ?? ''}
-                                onChange={e => numField('bedrooms', e.target.value)}
-                                placeholder="3"
-                            />
-                        </div>
-                        <div className="admin-field">
-                            <label>{isRTL ? 'دورات المياه' : 'Bathrooms'}</label>
-                            <input
-                                type="number" min={0}
-                                value={form.bathrooms ?? ''}
-                                onChange={e => numField('bathrooms', e.target.value)}
-                                placeholder="2"
-                            />
-                        </div>
-                        <div className="admin-field">
-                            <label>{isRTL ? 'دورة مياه عاملة' : 'Maid Bathroom'}</label>
-                            <input
-                                type="number" min={0}
-                                value={form.maidBathroom ?? ''}
-                                onChange={e => numField('maidBathroom', e.target.value)}
-                                placeholder="1"
-                            />
-                        </div>
-                    </div>
-
                     {/* ─ 6: Price ─ */}
                     <SectionTitle isRTL={isRTL} ar="💰 السعر" en="💰 Price" />
                     <div className="admin-form-grid" style={{ marginBottom: '24px' }}>
                         <div className="admin-field">
-                            <label>{isRTL ? 'السعر (ريال سعودي)' : 'Price (SAR)'}</label>
+                            <label>
+                                {isRTL ? 'السعر (ريال سعودي)' : 'Price (SAR)'}
+                                <span style={{ color: '#dc2626' }}> *</span>
+                            </label>
                             <input
                                 type="number" step="0.01" min={0}
                                 value={form.price ?? ''}
                                 onChange={e => numField('price', e.target.value)}
                                 placeholder="500,000"
+                                required
                             />
                         </div>
                     </div>
 
-                    {/* ─ 7: Features ─ */}
-                    <SectionTitle isRTL={isRTL} ar="✨ المميزات والمرافق" en="✨ Features & Amenities" />
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
-                        gap: '10px',
-                        marginBottom: '24px',
-                    }}>
-                        {FEATURES.map(feat => {
-                            const active = !!form[feat.key as FeatureKey];
-                            return (
-                                <button
-                                    key={feat.key}
-                                    type="button"
-                                    onClick={() => toggleFeature(feat.key)}
-                                    style={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        gap: '6px',
-                                        padding: '12px 8px',
-                                        borderRadius: '10px',
-                                        border: `2px solid ${active ? '#c9a227' : '#e5e7eb'}`,
-                                        background: active ? '#c9a2271a' : '#fff',
-                                        cursor: 'pointer',
-                                        transition: 'all 0.2s',
-                                        fontFamily: 'inherit',
-                                        fontSize: '12px',
-                                        fontWeight: active ? 700 : 400,
-                                        color: active ? '#92720b' : '#6b7280',
-                                    }}
-                                >
-                                    <span style={{ fontSize: '22px' }}>{feat.icon}</span>
-                                    {isRTL ? feat.labelAr : feat.labelEn}
-                                </button>
-                            );
-                        })}
+                    {/* ─ 7: Rooms & Facilities (unified numeric fields) ─ */}
+                    <SectionTitle isRTL={isRTL} ar="🛏️ الغرف والمرافق" en="🛏️ Rooms & Facilities" />
+                    <div
+                        className="admin-form-grid"
+                        style={{
+                            gridTemplateColumns: 'repeat(4, 1fr)',
+                            marginBottom: '24px',
+                        }}
+                    >
+                        {ROOM_FIELDS.map(field => (
+                            <div key={field.key} className="admin-field">
+                                <label>{isRTL ? field.labelAr : field.labelEn}</label>
+                                <input
+                                    type="number"
+                                    min={0}
+                                    value={form[field.key] ?? ''}
+                                    onChange={e =>
+                                        setField(
+                                            field.key,
+                                            e.target.value === ''
+                                                ? (NULLABLE_ROOM_FIELDS.includes(field.key) ? null : 0)
+                                                : Number(e.target.value)
+                                        )
+                                    }
+                                    placeholder="0"
+                                />
+                            </div>
+                        ))}
                     </div>
 
                     {/* ─ 8: Image ─ */}
                     <SectionTitle isRTL={isRTL} ar="🖼️ صورة الوحدة" en="🖼️ Unit Image" />
                     <div style={{ marginBottom: '24px' }}>
+
                         {/* Preview */}
                         {form.image && (
                             <div style={{
-                                marginBottom: '12px',
+                                marginBottom: '14px',
                                 position: 'relative',
                                 display: 'inline-block',
                             }}>
@@ -677,63 +665,131 @@ export default function ApartmentsDetailPage() {
                                 <img
                                     src={form.image}
                                     alt=""
+                                    onError={e => { (e.target as HTMLImageElement).style.opacity = '0.3'; }}
                                     style={{
-                                        width: '180px', height: '120px',
-                                        objectFit: 'cover', borderRadius: '8px',
+                                        width: '200px', height: '130px',
+                                        objectFit: 'cover', borderRadius: '10px',
                                         display: 'block', border: '2px solid #e5e7eb',
                                     }}
                                 />
                                 <button
                                     type="button"
-                                    onClick={() => setField('image', '')}
+                                    onClick={() => { setField('image', ''); setImageError(''); }}
+                                    title={isRTL ? 'إزالة الصورة' : 'Remove image'}
                                     style={{
-                                        position: 'absolute', top: '6px', right: '6px',
-                                        background: 'rgba(220,38,38,0.85)',
+                                        position: 'absolute', top: '8px', insetInlineEnd: '8px',
+                                        background: 'rgba(220,38,38,0.9)',
                                         color: '#fff', border: 'none', borderRadius: '50%',
-                                        width: '24px', height: '24px', cursor: 'pointer',
-                                        fontSize: '14px', display: 'flex',
+                                        width: '26px', height: '26px', cursor: 'pointer',
+                                        fontSize: '15px', display: 'flex', lineHeight: 0,
                                         alignItems: 'center', justifyContent: 'center',
                                     }}
                                 >×</button>
                             </div>
                         )}
 
-                        {/* Upload slot */}
-                        <div className="admin-upload-slot">
-                            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor" style={{ color: '#9ca3af' }}>
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <span style={{ fontSize: '12px', color: '#9ca3af' }}>
-                                {uploadingImg
-                                    ? (isRTL ? 'جاري الرفع...' : 'Uploading...')
-                                    : (isRTL ? 'اختر صورة للرفع' : 'Choose image to upload')}
-                            </span>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                disabled={uploadingImg}
-                                onChange={e => {
-                                    const f = e.target.files?.[0];
-                                    if (f) handleImageUpload(f);
-                                }}
-                            />
+                        {/* Mode tabs */}
+                        <div style={{
+                            display: 'flex', gap: '6px', marginBottom: '12px',
+                            background: '#f3f4f6', borderRadius: '10px', padding: '4px',
+                            maxWidth: '360px',
+                        }}>
+                            {(['upload', 'url'] as const).map(mode => (
+                                <button
+                                    key={mode}
+                                    type="button"
+                                    onClick={() => { setImageMode(mode); setImageError(''); }}
+                                    style={{
+                                        flex: 1,
+                                        padding: '8px 12px',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        fontSize: '13px',
+                                        fontWeight: 600,
+                                        cursor: 'pointer',
+                                        background: imageMode === mode ? '#fff' : 'transparent',
+                                        color: imageMode === mode ? '#1f2937' : '#6b7280',
+                                        boxShadow: imageMode === mode ? '0 1px 3px rgba(0,0,0,0.12)' : 'none',
+                                        transition: 'all 0.15s',
+                                    }}
+                                >
+                                    {mode === 'upload'
+                                        ? (isRTL ? '📤 رفع من الجهاز' : '📤 Upload from device')
+                                        : (isRTL ? '🔗 لصق رابط' : '🔗 Paste a URL')}
+                                </button>
+                            ))}
                         </div>
 
-                        {/* URL input */}
-                        <div className="admin-field" style={{ marginTop: '10px' }}>
-                            <label style={{ fontSize: '12px', color: '#9ca3af' }}>
-                                {isRTL ? 'أو أدخل رابط الصورة مباشرة' : 'Or paste image URL directly'}
+                        {/* Upload mode */}
+                        {imageMode === 'upload' && (
+                            <label
+                                htmlFor="apt-image-file-input"
+                                className="admin-upload-slot"
+                                style={{
+                                    cursor: uploadingImg ? 'wait' : 'pointer',
+                                    opacity: uploadingImg ? 0.7 : 1,
+                                }}
+                            >
+                                <svg width="26" height="26" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor" style={{ color: '#9ca3af' }}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span style={{ fontSize: '13px', fontWeight: 600, color: '#374151' }}>
+                                    {uploadingImg
+                                        ? (isRTL ? 'جاري الرفع...' : 'Uploading...')
+                                        : (isRTL ? 'اضغط هنا لاختيار صورة' : 'Click here to choose an image')}
+                                </span>
+                                <span style={{ fontSize: '11px', color: '#9ca3af' }}>
+                                    {isRTL ? 'JPG, PNG أو WEBP — حتى 10MB' : 'JPG, PNG or WEBP — up to 10MB'}
+                                </span>
+                                <input
+                                    id="apt-image-file-input"
+                                    type="file"
+                                    accept="image/*"
+                                    disabled={uploadingImg}
+                                    style={{ display: 'none' }}
+                                    onChange={e => {
+                                        const f = e.target.files?.[0];
+                                        if (f) handleImageUpload(f);
+                                        e.target.value = '';
+                                    }}
+                                />
                             </label>
-                            <input
-                                type="url"
-                                value={form.image ?? ''}
-                                onChange={e => setField('image', e.target.value || null)}
-                                placeholder="https://..."
-                                dir="ltr"
-                            />
-                        </div>
+                        )}
+
+                        {/* URL mode */}
+                        {imageMode === 'url' && (
+                            <div className="admin-field" style={{ maxWidth: '480px' }}>
+                                <label style={{ fontSize: '12px', color: '#6b7280' }}>
+                                    {isRTL ? 'رابط الصورة (يبدأ بـ https://)' : 'Image URL (must start with https://)'}
+                                </label>
+                                <input
+                                    type="url"
+                                    value={form.image ?? ''}
+                                    onChange={e => {
+                                        const val = e.target.value;
+                                        setField('image', val || null);
+                                        setImageError(
+                                            isValidImageUrl(val)
+                                                ? ''
+                                                : (isRTL
+                                                    ? 'هذا الرابط غير صحيح — يجب أن يبدأ بـ http:// أو https://‏ (وليس مسارًا من جهازك مثل  C:\\...)'
+                                                    : 'Not a valid link — it must start with http:// or https:// (not a local file path like C:\\...)')
+                                        );
+                                    }}
+                                    placeholder="https://example.com/image.jpg"
+                                    dir="ltr"
+                                    style={form.image && !isValidImageUrl(form.image) ? { borderColor: '#dc2626' } : undefined}
+                                />
+                            </div>
+                        )}
+
+                        {imageError && (
+                            <p style={{ color: '#dc2626', fontSize: '12px', marginTop: '8px' }}>
+                                ⚠️ {imageError}
+                            </p>
+                        )}
                     </div>
 
                     {/* ─ Error message ─ */}
@@ -901,7 +957,7 @@ export default function ApartmentsDetailPage() {
                         <tr>
                             <th>{isRTL ? 'الصورة' : 'Image'}</th>
                             <th>{isRTL ? 'الكود' : 'Code'}</th>
-                            <th>{isRTL ? 'الاسم' : 'Name'}</th>
+                            <th>{isRTL ? 'الوحدة' : 'Unit'}</th>
                             <th>{isRTL ? 'المبنى' : 'Building'}</th>
                             <th>{isRTL ? 'الطابق' : 'Floor'}</th>
                             <th>{isRTL ? 'المساحة' : 'Area'}</th>
@@ -914,11 +970,9 @@ export default function ApartmentsDetailPage() {
                     </thead>
                     <tbody>
                         {filtered.map(apt => {
-                            const name = isRTL
-                                ? apt.nameAr
-                                : (apt.nameEn || apt.nameAr);
-                            const featureCount = FEATURES.filter(
-                                f => !!apt[f.key as FeatureKey]
+                            const name = unitTitle(apt, isRTL);
+                            const featureCount = ROOM_FIELDS.filter(
+                                f => !!apt[f.key as RoomFieldKey] && f.key !== 'bedrooms' && f.key !== 'bathrooms'
                             ).length;
 
                             return (
@@ -956,31 +1010,16 @@ export default function ApartmentsDetailPage() {
                                         </span>
                                     </td>
 
-                                    {/* Name + Type */}
+                                    {/* Title (generated: type + code) */}
                                     <td>
                                         <span style={{ fontWeight: 600, color: '#1f2937' }}>
                                             {name}
                                         </span>
-                                        {apt.type && (
-                                            <span style={{
-                                                fontSize: '11px', color: '#9ca3af',
-                                                display: 'block', fontWeight: 400,
-                                            }}>
-                                                {apt.type}
-                                            </span>
-                                        )}
                                     </td>
 
-                                    {/* Building + Number */}
+                                    {/* Building */}
                                     <td style={{ color: '#6b7280', fontSize: '13px' }}>
                                         {apt.buildingName || '—'}
-                                        {apt.apartmentNumber && (
-                                            <span style={{
-                                                fontSize: '11px', color: '#9ca3af', display: 'block',
-                                            }}>
-                                                #{apt.apartmentNumber}
-                                            </span>
-                                        )}
                                     </td>
 
                                     {/* Floor */}

@@ -16,8 +16,6 @@ interface GalleryImage {
 interface Apartment {
   id: number;
   unitCode: string;
-  nameAr: string;
-  nameEn: string | null;
   buildingName: string | null;
   type: string | null;
   floor: number | null;
@@ -44,7 +42,6 @@ interface Apartment {
   laundry: number | null;
   direction: string | null;
   view: string | null;
-  apartmentNumber: number | null;
 }
 interface Project {
   id: number;
@@ -167,7 +164,8 @@ function AptFeatures({ apt, isRTL }: { apt: Apartment; isRTL: boolean }) {
 }
 
 function AptContactForm({ apt, isRTL }: { apt: Apartment; isRTL: boolean }) {
-  const aptName = isRTL ? apt.nameAr : apt.nameEn || apt.nameAr;
+  const aptName =
+    `${apt.type || (isRTL ? "وحدة" : "Unit")} ${apt.unitCode || ""}`.trim();
   const waMsg = encodeURIComponent(
     isRTL ? `استفسار عن ${aptName}` : `Inquiry about ${aptName}`,
   );
@@ -547,14 +545,13 @@ export default function ProjectDetailsPage({
     buildings[b].push(a);
   });
 
-  // Sort apartments within each building by apartmentNumber then nameAr
+  // Sort apartments within each building by unit code
   Object.keys(buildings).forEach((b) => {
-    buildings[b].sort((x, y) => {
-      if (x.apartmentNumber !== y.apartmentNumber) {
-        return (x.apartmentNumber || 0) - (y.apartmentNumber || 0);
-      }
-      return (x.nameAr || "").localeCompare(y.nameAr || "", "ar");
-    });
+    buildings[b].sort((x, y) =>
+      (x.unitCode || "").localeCompare(y.unitCode || "", "ar", {
+        numeric: true,
+      }),
+    );
   });
 
   // Check both livePreview and icon3d fields for 3D viewer URL
@@ -903,15 +900,27 @@ export default function ProjectDetailsPage({
                           setOpenBuilding(openBuilding === bName ? null : bName)
                         }
                       >
-                        <span>{bName}</span>
+                        <span>
+                          {bName === "General" ? (
+                            isRTL ? (
+                              "عام"
+                            ) : (
+                              "General"
+                            )
+                          ) : (
+                            <>
+                              {isRTL ? "مبنى " : "Building "}
+                              <bdi>{bName}</bdi>
+                            </>
+                          )}
+                        </span>
                         <span>{openBuilding === bName ? "▲" : "▼"}</span>
                       </button>
                       {openBuilding === bName && (
                         <div style={{ padding: "10px 0" }}>
                           {apts.map((apt) => {
-                            const aptName = isRTL
-                              ? apt.nameAr
-                              : apt.nameEn || apt.nameAr;
+                            const aptName =
+                              `${apt.type || (isRTL ? "وحدة" : "Unit")} ${apt.unitCode || ""}`.trim();
                             const isExpanded = expandedApt === apt.id;
                             return (
                               <div key={apt.id}>
@@ -924,9 +933,43 @@ export default function ProjectDetailsPage({
                                       );
                                   }}
                                 >
-                                  <span className="pdp-unit-name">
-                                    {aptName}
+                                  <span
+                                    className="pdp-unit-name"
+                                    style={{
+                                      display: "inline-flex",
+                                      alignItems: "baseline",
+                                      gap: 10,
+                                    }}
+                                  >
+                                    <span>
+                                      {apt.type || (isRTL ? "وحدة" : "Unit")}
+                                    </span>
+                                    {apt.unitCode && <bdi>{apt.unitCode}</bdi>}
                                   </span>
+                                  {apt.unitCode && (
+                                    <span
+                                      style={{
+                                        fontSize: "11px",
+                                        color: "#6b7280",
+                                        background: "#f3f4f6",
+                                        padding: "2px 8px",
+                                        borderRadius: "4px",
+                                        fontFamily: "monospace",
+                                      }}
+                                    >
+                                      <bdi>{apt.unitCode}</bdi>
+                                    </span>
+                                  )}
+                                  {apt.type && (
+                                    <span
+                                      style={{
+                                        fontSize: "11px",
+                                        color: "#6b7280",
+                                      }}
+                                    >
+                                      {apt.type}
+                                    </span>
+                                  )}
                                   {apt.price != null && (
                                     <span
                                       style={{

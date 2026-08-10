@@ -14,7 +14,7 @@ const MapPicker = dynamic(() => import("@/components/admin/MapPicker"), {
 });
 
 const PROJECT_TYPES = [
-"فلل",
+  "فلل",
   "أدوار",
   "شقق",
   "عمائر",
@@ -125,12 +125,28 @@ export default function EditProjectPage({
     elevatorsCount: 0,
     isFeatured: 0,
     sortOrder: 0,
+    sheetUrl: "",
+    sheetTabName: "",
   });
 
   const [images, setImages] = useState<Record<string, string>>({});
   const [uploading, setUploading] = useState<string | null>(null);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [files, setFiles] = useState<Record<string, string>>({});
+  const [sheetMeta, setSheetMeta] = useState<{
+    status: string;
+    error: string;
+    lastSyncedAt: string;
+    lastSummary: string;
+    validationIssues: { type: string; unitCode: string; detail: string }[];
+  }>({
+    status: "idle",
+    error: "",
+    lastSyncedAt: "",
+    lastSummary: "",
+    validationIssues: [],
+  });
+  const [syncing, setSyncing] = useState(false);
 
   useEffect(() => {
     fetch(`/api/projects/${id}`)
@@ -175,6 +191,15 @@ export default function EditProjectPage({
           elevatorsCount: p.elevatorsCount ?? 0,
           isFeatured: p.isFeatured ?? 0,
           sortOrder: p.sortOrder ?? 0,
+          sheetUrl: p.sheetUrl || "",
+          sheetTabName: p.sheetTabName || "",
+        });
+        setSheetMeta({
+          status: p.sheetSyncStatus || "idle",
+          error: p.sheetSyncError || "",
+          lastSyncedAt: p.sheetLastSyncedAt || "",
+          lastSummary: p.sheetLastSummary || "",
+          validationIssues: [],
         });
         setImages({
           image: p.image || "",
@@ -301,6 +326,40 @@ export default function EditProjectPage({
       setError("Network error");
     }
     setSaving(false);
+  };
+
+  const syncSheetNow = async () => {
+    setSyncing(true);
+    try {
+      const res = await fetch(`/api/admin/projects/${id}/sync-sheet`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSheetMeta({
+          status: "success",
+          error: "",
+          lastSyncedAt: new Date().toISOString(),
+          lastSummary: `تبويب: ${data.summary.tabTitle} | created: ${data.summary.created}, updated: ${data.summary.updated}, deleted: ${data.summary.deleted}, skipped: ${data.summary.skipped}`,
+          validationIssues: [],
+        });
+      } else {
+        setSheetMeta((prev) => ({
+          ...prev,
+          status: "error",
+          error: data.error || "فشلت المزامنة",
+          validationIssues: data.validationIssues || [],
+        }));
+      }
+    } catch {
+      setSheetMeta((prev) => ({
+        ...prev,
+        status: "error",
+        error: "خطأ في الاتصال بالسيرفر",
+        validationIssues: [],
+      }));
+    }
+    setSyncing(false);
   };
 
   if (loading) {
@@ -673,6 +732,148 @@ export default function EditProjectPage({
                   }
                 />
               </div>
+            </div>
+
+            {/* Google Sheet Sync */}
+            <div className="admin-section">
+              <h3>{isRTL ? "مزامنة Google Sheet" : "Google Sheet Sync"}</h3>
+              <div className="admin-field" style={{ marginBottom: "12px" }}>
+                <label>{isRTL ? "رابط الشيت" : "Sheet URL"}</label>
+                <input
+                  type="text"
+                  dir="ltr"
+                  placeholder="https://docs.google.com/spreadsheets/d/..."
+                  value={form.sheetUrl}
+                  onChange={(e) => updateField("sheetUrl", e.target.value)}
+                />
+              </div>
+              <div className="admin-field" style={{ marginBottom: "12px" }}>
+                <label>
+                  {isRTL ? "اسم التبويب (اختياري)" : "Tab name (optional)"}
+                </label>
+                <input
+                  type="text"
+                  dir="rtl"
+                  placeholder={isRTL ? "الوحدات السكنية" : "e.g. Sheet1"}
+                  value={form.sheetTabName}
+                  onChange={(e) => updateField("sheetTabName", e.target.value)}
+                />
+                <small style={{ color: "#9ca3af" }}>
+                  {isRTL
+                    ? "لو سايبها فاضية، هياخد أول تبويب في الشيت تلقائيًا"
+                    : "Leave empty to use the first tab automatically"}
+                </small>
+              </div>
+
+              {form.sheetUrl && (
+                <>
+                  <button
+                    type="button"
+                    onClick={syncSheetNow}
+                    disabled={syncing}
+                    className="admin-btn-secondary"
+                    style={{ width: "100%", marginBottom: "10px" }}
+                  >
+                    {syncing
+                      ? isRTL
+                        ? "جاري المزامنة..."
+                        : "Syncing..."
+                      : isRTL
+                        ? "🔄 مزامنة الآن"
+                        : "🔄 Sync Now"}
+                  </button>
+
+                  <div
+                    style={{
+                      fontSize: "12px",
+                      color:
+                        sheetMeta.status === "error" ? "#dc2626" : "#6b7280",
+                      background: "#f9fafb",
+                      padding: "8px 10px",
+                      borderRadius: "6px",
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    {sheetMeta.status === "error" ? (
+                      <div>
+                        <div style={{ marginBottom: 6 }}>
+                          {isRTL ? "❌ خطأ: " : "❌ Error: "}
+                          {sheetMeta.validationIssues.length > 0
+                            ? isRTL
+                              ? `فيه ${sheetMeta.validationIssues.length} مشكلة في الشيت لازم تتصلح قبل ما نقدر نزامن`
+                              : `${sheetMeta.validationIssues.length} issue(s) found — fix them before syncing`
+                            : sheetMeta.error}
+                        </div>
+                        {sheetMeta.validationIssues.length > 0 && (
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: 4,
+                              marginTop: 8,
+                              maxHeight: 220,
+                              overflowY: "auto",
+                            }}
+                          >
+                            {sheetMeta.validationIssues.map((issue, i) => (
+                              <div
+                                key={i}
+                                style={{
+                                  background: "#fff",
+                                  border: "1px solid #fecaca",
+                                  borderRadius: 6,
+                                  padding: "6px 10px",
+                                  fontSize: 11,
+                                }}
+                              >
+                                <span
+                                  style={{
+                                    fontWeight: 700,
+                                    fontFamily: "monospace",
+                                    marginInlineEnd: 6,
+                                  }}
+                                >
+                                  {issue.unitCode || "—"}
+                                </span>
+                                <span style={{ color: "#6b7280" }}>
+                                  {issue.type === "duplicate"
+                                    ? isRTL
+                                      ? "🔁 "
+                                      : "🔁 "
+                                    : issue.type === "missing_field"
+                                      ? isRTL
+                                        ? "⚠️ "
+                                        : "⚠️ "
+                                      : isRTL
+                                        ? "❓ "
+                                        : "❓ "}
+                                  {issue.detail}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : sheetMeta.lastSyncedAt ? (
+                      <>
+                        <div>
+                          {isRTL ? "آخر مزامنة: " : "Last synced: "}
+                          {new Date(sheetMeta.lastSyncedAt).toLocaleString(
+                            isRTL ? "ar-SA" : "en-US",
+                          )}
+                        </div>
+                        {sheetMeta.lastSummary && (
+                          <div>{sheetMeta.lastSummary}</div>
+                        )}
+                      </>
+                    ) : (
+                      <div>
+                        {isRTL ? "لم تتم المزامنة بعد" : "Not synced yet"}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Excerpts */}
