@@ -25,9 +25,7 @@ export async function GET(
     apartments: {
        orderBy: [
         { buildingName: 'asc' },
-        { apartmentNumber: 'asc' },
-        { nameAr: 'asc' },
-        { nameEn: 'asc' },
+        { unitCode: 'asc' },
     ],
     },
     galleryImages: {
@@ -151,6 +149,8 @@ export async function PUT(
         projectFile2: body.projectFile2,
         projectFile3: body.projectFile3,
         video: body.video,
+        sheetUrl: body.sheetUrl,
+        sheetTabName: body.sheetTabName,
       },
     });
 
