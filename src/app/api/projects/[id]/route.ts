@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getAuthFromRequest } from "@/lib/auth";
-
+import crypto from "crypto";
 // GET - Single project (admin, all fields)
 export async function GET(
   request: NextRequest,
@@ -62,7 +62,22 @@ export async function PUT(
       return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
     }
 
-    const body = await request.json();
+       const body = await request.json();
+
+    // لو المشروع بيتربط برابط شيت لأول مرة، نولّد مفتاح سري خاص به
+    // (يُستخدم لاحقًا للتحقق من أي إشعار يجيلنا من الشيت نفسه).
+    // الشرط بيتأكد الأول إن المشروع معندوش مفتاح من قبل، عشان
+    // لو الأدمن بيحفظ تعديلات تانية بعد كده، المفتاح ميتغيرش من كل حفظة.
+    let webhookSecret: string | undefined;
+    if (body.sheetUrl) {
+      const existingProject = await prisma.project.findUnique({
+        where: { id: projectId },
+        select: { sheetWebhookSecret: true },
+      });
+      if (existingProject && !existingProject.sheetWebhookSecret) {
+        webhookSecret = crypto.randomBytes(24).toString("hex");
+      }
+    }
 
     if (body.sortOrder != null) {
       const existing = await prisma.project.findFirst({
@@ -151,6 +166,7 @@ export async function PUT(
         video: body.video,
         sheetUrl: body.sheetUrl,
         sheetTabName: body.sheetTabName,
+         ...(webhookSecret ? { sheetWebhookSecret: webhookSecret } : {}),
       },
     });
 
