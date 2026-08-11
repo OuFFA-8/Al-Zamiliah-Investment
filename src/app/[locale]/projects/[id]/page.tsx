@@ -263,6 +263,212 @@ function AptContactForm({ apt, isRTL }: { apt: Apartment; isRTL: boolean }) {
   );
 }
 
+function AptUnitRow({
+  apt,
+  isRTL,
+  isExpanded,
+  onToggle,
+}: {
+  apt: Apartment;
+  isRTL: boolean;
+  isExpanded: boolean;
+  onToggle: () => void;
+}) {
+  const aptName =
+    `${apt.type || (isRTL ? "وحدة" : "Unit")} ${apt.unitCode || ""}`.trim();
+  return (
+    <div>
+      <div
+        className={`pdp-unit-row ${apt.status !== "available" ? "pdp-unit-row-disabled" : ""}`}
+        onClick={() => {
+          if (apt.status === "available") onToggle();
+        }}
+      >
+        <span
+          className="pdp-unit-name"
+          style={{
+            display: "inline-flex",
+            alignItems: "baseline",
+            gap: 10,
+          }}
+        >
+          <span>{apt.type || (isRTL ? "وحدة" : "Unit")}</span>
+          {apt.unitCode && <bdi>{apt.unitCode}</bdi>}
+        </span>
+        {apt.unitCode && (
+          <span
+            style={{
+              fontSize: "11px",
+              color: "#6b7280",
+              background: "#f3f4f6",
+              padding: "2px 8px",
+              borderRadius: "4px",
+              fontFamily: "monospace",
+            }}
+          >
+            <bdi>{apt.unitCode}</bdi>
+          </span>
+        )}
+        {apt.type && (
+          <span
+            style={{
+              fontSize: "11px",
+              color: "#6b7280",
+            }}
+          >
+            {apt.type}
+          </span>
+        )}
+        {apt.price != null && (
+          <span
+            style={{
+              fontWeight: 600,
+              color: "#b8860b",
+            }}
+          >
+            {apt.price.toLocaleString()} <small>SAR</small>
+          </span>
+        )}
+        {apt.area && <span>{apt.area} m²</span>}
+        {apt.bedrooms != null && (
+          <span>
+            {apt.bedrooms} {isRTL ? "غرف" : "BR"}
+          </span>
+        )}
+        <span className={`pdp-unit-badge ${apt.status}`}>
+          {apt.status === "available"
+            ? isRTL
+              ? "متاح"
+              : "Available"
+            : apt.status === "reserved"
+              ? isRTL
+                ? "محجوز"
+                : "Reserved"
+              : isRTL
+                ? "مُباع"
+                : "Sold"}
+        </span>
+        {apt.status === "available" && (
+          <a
+            href="https://wa.me/966920031404"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="pdp-unit-wa"
+            onClick={(e) => e.stopPropagation()}
+          >
+            WhatsApp
+          </a>
+        )}
+      </div>
+      {isExpanded && apt.status === "available" && (
+        <div className="pdp-unit-expand">
+          {/* Price + Area + Status header */}
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 20,
+              marginBottom: 16,
+              fontSize: 14,
+            }}
+          >
+            {apt.unitCode && (
+              <span>
+                <strong>{isRTL ? "كود الوحدة:" : "Unit Code:"}</strong>{" "}
+                {apt.unitCode}
+              </span>
+            )}
+            {apt.price != null && (
+              <span>
+                <strong>{isRTL ? "السعر:" : "Price:"}</strong>{" "}
+                {apt.price.toLocaleString()} SAR
+              </span>
+            )}
+            {apt.area != null && (
+              <span>
+                <strong>
+                  {isRTL ? "المساحة الإجمالية:" : "Total Area:"}
+                </strong>{" "}
+                {apt.area} m²
+              </span>
+            )}
+            {apt.buildingArea != null && (
+              <span>
+                <strong>
+                  {isRTL ? "مساحة البناء:" : "Building Area:"}
+                </strong>{" "}
+                {apt.buildingArea} m²
+              </span>
+            )}
+            {apt.roofArea != null && (
+              <span>
+                <strong>{isRTL ? "مساحة السطح:" : "Roof Area:"}</strong>{" "}
+                {apt.roofArea} m²
+              </span>
+            )}
+            <span>
+              <strong>{isRTL ? "الحالة:" : "Status:"}</strong>{" "}
+              {isRTL ? "متاح" : "Available"}
+            </span>
+          </div>
+          <div className="pdp-unit-expand-grid">
+            {/* Image */}
+            <div>
+              {apt.image ? (
+                <a
+                  href={
+                    apt.image.startsWith("http")
+                      ? apt.image
+                      : apt.image.startsWith("/")
+                        ? apt.image
+                        : `/${apt.image}`
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Image
+                    src={
+                      apt.image.startsWith("http")
+                        ? apt.image
+                        : apt.image.startsWith("/")
+                          ? apt.image
+                          : `/${apt.image}`
+                    }
+                    alt={aptName}
+                    className="pdp-unit-image"
+                    width={400}
+                    height={300}
+                    style={{ objectFit: "cover" }}
+                  />
+                </a>
+              ) : (
+                <div
+                  style={{
+                    height: 200,
+                    background: "#f5f5f5",
+                    borderRadius: 8,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#aaa",
+                  }}
+                >
+                  {isRTL ? "لا توجد صورة" : "No image"}
+                </div>
+              )}
+            </div>
+            {/* Features */}
+            <div>
+              <AptFeatures apt={apt} isRTL={isRTL} />
+            </div>
+          </div>
+          <AptContactForm apt={apt} isRTL={isRTL} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ProjectDetailsPage({
   params,
 }: {
@@ -525,8 +731,18 @@ export default function ProjectDetailsPage({
     },
   ].filter((g) => g.on && g.on > 0);
 
+  // المحلات التجارية (النوع = "محل") ليها قسمها الخاص، فمش بتتحسب مع المباني
+  const shops: Apartment[] = project.apartments
+    .filter((a) => a.type === "محل")
+    .sort((x, y) =>
+      (x.unitCode || "").localeCompare(y.unitCode || "", "ar", {
+        numeric: true,
+      }),
+    );
+
   const buildings: Record<string, Apartment[]> = {};
   project.apartments.forEach((a) => {
+    if (a.type === "محل") return;
     const b = a.buildingName || "General";
     if (!buildings[b]) buildings[b] = [];
     buildings[b].push(a);
@@ -895,242 +1111,54 @@ export default function ProjectDetailsPage({
                               "General"
                             )
                           ) : (
-                            <>
-                              {isRTL ? "مبنى " : "Building "}
-                              <bdi>{bName}</bdi>
-                            </>
+                            <bdi>{bName}</bdi>
                           )}
                         </span>
                         <span>{openBuilding === bName ? "▲" : "▼"}</span>
                       </button>
                       {openBuilding === bName && (
                         <div style={{ padding: "10px 0" }}>
-                          {apts.map((apt) => {
-                            const aptName =
-                              `${apt.type || (isRTL ? "وحدة" : "Unit")} ${apt.unitCode || ""}`.trim();
-                            const isExpanded = expandedApt === apt.id;
-                            return (
-                              <div key={apt.id}>
-                                <div
-                                  className={`pdp-unit-row ${apt.status !== "available" ? "pdp-unit-row-disabled" : ""}`}
-                                  onClick={() => {
-                                    if (apt.status === "available")
-                                      setExpandedApt(
-                                        isExpanded ? null : apt.id,
-                                      );
-                                  }}
-                                >
-                                  <span
-                                    className="pdp-unit-name"
-                                    style={{
-                                      display: "inline-flex",
-                                      alignItems: "baseline",
-                                      gap: 10,
-                                    }}
-                                  >
-                                    <span>
-                                      {apt.type || (isRTL ? "وحدة" : "Unit")}
-                                    </span>
-                                    {apt.unitCode && <bdi>{apt.unitCode}</bdi>}
-                                  </span>
-                                  {apt.unitCode && (
-                                    <span
-                                      style={{
-                                        fontSize: "11px",
-                                        color: "#6b7280",
-                                        background: "#f3f4f6",
-                                        padding: "2px 8px",
-                                        borderRadius: "4px",
-                                        fontFamily: "monospace",
-                                      }}
-                                    >
-                                      <bdi>{apt.unitCode}</bdi>
-                                    </span>
-                                  )}
-                                  {apt.type && (
-                                    <span
-                                      style={{
-                                        fontSize: "11px",
-                                        color: "#6b7280",
-                                      }}
-                                    >
-                                      {apt.type}
-                                    </span>
-                                  )}
-                                  {apt.price != null && (
-                                    <span
-                                      style={{
-                                        fontWeight: 600,
-                                        color: "#b8860b",
-                                      }}
-                                    >
-                                      {apt.price.toLocaleString()}{" "}
-                                      <small>SAR</small>
-                                    </span>
-                                  )}
-                                  {apt.area && <span>{apt.area} m²</span>}
-                                  {apt.bedrooms != null && (
-                                    <span>
-                                      {apt.bedrooms} {isRTL ? "غرف" : "BR"}
-                                    </span>
-                                  )}
-                                  <span
-                                    className={`pdp-unit-badge ${apt.status}`}
-                                  >
-                                    {apt.status === "available"
-                                      ? isRTL
-                                        ? "متاح"
-                                        : "Available"
-                                      : apt.status === "reserved"
-                                        ? isRTL
-                                          ? "محجوز"
-                                          : "Reserved"
-                                        : isRTL
-                                          ? "مُباع"
-                                          : "Sold"}
-                                  </span>
-                                  {apt.status === "available" && (
-                                    <a
-                                      href="https://wa.me/966920031404"
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="pdp-unit-wa"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      WhatsApp
-                                    </a>
-                                  )}
-                                </div>
-                                {isExpanded && apt.status === "available" && (
-                                  <div className="pdp-unit-expand">
-                                    {/* Price + Area + Status header */}
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        flexWrap: "wrap",
-                                        gap: 20,
-                                        marginBottom: 16,
-                                        fontSize: 14,
-                                      }}
-                                    >
-                                      {apt.unitCode && (
-                                        <span>
-                                          <strong>
-                                            {isRTL
-                                              ? "كود الوحدة:"
-                                              : "Unit Code:"}
-                                          </strong>{" "}
-                                          {apt.unitCode}
-                                        </span>
-                                      )}
-                                      {apt.price != null && (
-                                        <span>
-                                          <strong>
-                                            {isRTL ? "السعر:" : "Price:"}
-                                          </strong>{" "}
-                                          {apt.price.toLocaleString()} SAR
-                                        </span>
-                                      )}
-                                      {apt.area != null && (
-                                        <span>
-                                          <strong>
-                                            {isRTL
-                                              ? "المساحة الإجمالية:"
-                                              : "Total Area:"}
-                                          </strong>{" "}
-                                          {apt.area} m²
-                                        </span>
-                                      )}
-                                      {apt.buildingArea != null && (
-                                        <span>
-                                          <strong>
-                                            {isRTL
-                                              ? "مساحة البناء:"
-                                              : "Building Area:"}
-                                          </strong>{" "}
-                                          {apt.buildingArea} m²
-                                        </span>
-                                      )}
-                                      {apt.roofArea != null && (
-                                        <span>
-                                          <strong>
-                                            {isRTL
-                                              ? "مساحة السطح:"
-                                              : "Roof Area:"}
-                                          </strong>{" "}
-                                          {apt.roofArea} m²
-                                        </span>
-                                      )}
-                                      <span>
-                                        <strong>
-                                          {isRTL ? "الحالة:" : "Status:"}
-                                        </strong>{" "}
-                                        {isRTL ? "متاح" : "Available"}
-                                      </span>
-                                    </div>
-                                    <div className="pdp-unit-expand-grid">
-                                      {/* Image */}
-                                      <div>
-                                        {apt.image ? (
-                                          <a
-                                            href={
-                                              apt.image.startsWith("http")
-                                                ? apt.image
-                                                : apt.image.startsWith("/")
-                                                  ? apt.image
-                                                  : `/${apt.image}`
-                                            }
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                          >
-                                            <Image
-                                              src={
-                                                apt.image.startsWith("http")
-                                                  ? apt.image
-                                                  : apt.image.startsWith("/")
-                                                    ? apt.image
-                                                    : `/${apt.image}`
-                                              }
-                                              alt={aptName}
-                                              className="pdp-unit-image"
-                                              width={400}
-                                              height={300}
-                                              style={{ objectFit: "cover" }}
-                                            />
-                                          </a>
-                                        ) : (
-                                          <div
-                                            style={{
-                                              height: 200,
-                                              background: "#f5f5f5",
-                                              borderRadius: 8,
-                                              display: "flex",
-                                              alignItems: "center",
-                                              justifyContent: "center",
-                                              color: "#aaa",
-                                            }}
-                                          >
-                                            {isRTL
-                                              ? "لا توجد صورة"
-                                              : "No image"}
-                                          </div>
-                                        )}
-                                      </div>
-                                      {/* Features */}
-                                      <div>
-                                        <AptFeatures apt={apt} isRTL={isRTL} />
-                                      </div>
-                                    </div>
-                                    <AptContactForm apt={apt} isRTL={isRTL} />
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
+                          {apts.map((apt) => (
+                            <AptUnitRow
+                              key={apt.id}
+                              apt={apt}
+                              isRTL={isRTL}
+                              isExpanded={expandedApt === apt.id}
+                              onToggle={() =>
+                                setExpandedApt(
+                                  expandedApt === apt.id ? null : apt.id,
+                                )
+                              }
+                            />
+                          ))}
                         </div>
                       )}
                     </div>
                   ))}
+                </div>
+              )}
+
+              {/* Commercial Shops */}
+              {shops.length > 0 && (
+                <div className="pdp-card">
+                  <div className="pdp-card-label">
+                    {isRTL ? "المحلات التجارية" : "Commercial Shops"}
+                  </div>
+                  <div style={{ padding: "10px 0" }}>
+                    {shops.map((apt) => (
+                      <AptUnitRow
+                        key={apt.id}
+                        apt={apt}
+                        isRTL={isRTL}
+                        isExpanded={expandedApt === apt.id}
+                        onToggle={() =>
+                          setExpandedApt(
+                            expandedApt === apt.id ? null : apt.id,
+                          )
+                        }
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -1436,61 +1464,6 @@ export default function ProjectDetailsPage({
                         </a>
                       </div>
                     )}
-                    {/* {project.video && (
-                      <div className="pdp-feature">
-                        <span className="pdp-feature-icon">
-                          <svg
-                            viewBox="0 0 24 24"
-                            width="18"
-                            height="18"
-                            fill="currentColor"
-                          >
-                            <path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z" />
-                          </svg>
-                        </span>
-                        <a
-                          href={project.video}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            color: "var(--color-primary)",
-                            textDecoration: "none",
-                            fontSize: "14px",
-                            transition: "opacity 0.2s",
-                          }}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.opacity = "0.75")
-                          }
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.opacity = "1")
-                          }
-                        >
-                          {isRTL ? "فيديو المشروع" : "Project Video"}
-                        </a>
-                      </div>
-                    )}
-                    {project.video && (
-                      <div className="pdp-feature">
-                        <span className="pdp-feature-icon">
-                          <svg
-                            viewBox="0 0 24 24"
-                            width="18"
-                            height="18"
-                            fill="currentColor"
-                          >
-                            <path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z" />
-                          </svg>
-                        </span>
-                        <a
-                          href={project.video}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="pdp-file-link"
-                        >
-                          {isRTL ? "فيديو المشروع" : "Project Video"}
-                        </a>
-                      </div>
-                    )} */}
                   </div>
                 </div>
               )}

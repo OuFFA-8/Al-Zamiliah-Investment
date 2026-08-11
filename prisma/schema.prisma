@@ -91,7 +91,6 @@ model Project {
   // Google Sheet sync
   sheetUrl          String?   @map("sheet_url")
   sheetTabName      String?   @map("sheet_tab_name")
-  sheetWebhookSecret String?  @unique @map("sheet_webhook_secret")
   sheetLastSyncedAt DateTime? @map("sheet_last_synced_at")
   sheetSyncStatus   String?   @default("idle") @map("sheet_sync_status") // idle | syncing | success | error
   sheetSyncError    String?   @map("sheet_sync_error") @db.Text

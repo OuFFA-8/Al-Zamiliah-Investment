@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { getAuthFromRequest } from "@/lib/auth";
-import crypto from "crypto";
+import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+import { getAuthFromRequest } from '@/lib/auth';
+
 // GET - Single project (admin, all fields)
 export async function GET(
   request: NextRequest,
@@ -9,39 +9,36 @@ export async function GET(
 ) {
   const auth = await getAuthFromRequest(request);
   if (!auth) {
-    return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
+    return NextResponse.json({ error: 'غير مصرح' }, { status: 401 });
   }
 
   try {
     const { id } = await params;
     const projectId = parseInt(id);
     if (isNaN(projectId)) {
-      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
     }
 
     const project = await prisma.project.findUnique({
       where: { id: projectId },
       include: {
-    apartments: {
-       orderBy: [
-        { buildingName: 'asc' },
-        { unitCode: 'asc' },
-    ],
-    },
-    galleryImages: {
-        orderBy: { sortOrder: 'asc' },
-    },
-}
+        apartments: {
+          orderBy: [{ buildingName: 'asc' }, { unitCode: 'asc' }],
+        },
+        galleryImages: {
+          orderBy: { sortOrder: 'asc' },
+        },
+      },
     });
 
     if (!project) {
-      return NextResponse.json({ error: "المشروع غير موجود" }, { status: 404 });
+      return NextResponse.json({ error: 'المشروع غير موجود' }, { status: 404 });
     }
 
     return NextResponse.json(project);
   } catch (error) {
-    console.error("Error fetching project:", error);
-    return NextResponse.json({ error: "حدث خطأ" }, { status: 500 });
+    console.error('Error fetching project:', error);
+    return NextResponse.json({ error: 'حدث خطأ' }, { status: 500 });
   }
 }
 
@@ -52,32 +49,17 @@ export async function PUT(
 ) {
   const auth = await getAuthFromRequest(request);
   if (!auth) {
-    return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
+    return NextResponse.json({ error: 'غير مصرح' }, { status: 401 });
   }
 
   try {
     const { id } = await params;
     const projectId = parseInt(id);
     if (isNaN(projectId)) {
-      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
     }
 
-       const body = await request.json();
-
-    // لو المشروع بيتربط برابط شيت لأول مرة، نولّد مفتاح سري خاص به
-    // (يُستخدم لاحقًا للتحقق من أي إشعار يجيلنا من الشيت نفسه).
-    // الشرط بيتأكد الأول إن المشروع معندوش مفتاح من قبل، عشان
-    // لو الأدمن بيحفظ تعديلات تانية بعد كده، المفتاح ميتغيرش من كل حفظة.
-    let webhookSecret: string | undefined;
-    if (body.sheetUrl) {
-      const existingProject = await prisma.project.findUnique({
-        where: { id: projectId },
-        select: { sheetWebhookSecret: true },
-      });
-      if (existingProject && !existingProject.sheetWebhookSecret) {
-        webhookSecret = crypto.randomBytes(24).toString("hex");
-      }
-    }
+    const body = await request.json();
 
     if (body.sortOrder != null) {
       const existing = await prisma.project.findFirst({
@@ -88,7 +70,7 @@ export async function PUT(
       });
       if (existing) {
         return NextResponse.json(
-          { error: "هذا الترتيب مستخدم بالفعل لمشروع آخر" },
+          { error: 'هذا الترتيب مستخدم بالفعل لمشروع آخر' },
           { status: 400 },
         );
       }
@@ -166,15 +148,14 @@ export async function PUT(
         video: body.video,
         sheetUrl: body.sheetUrl,
         sheetTabName: body.sheetTabName,
-         ...(webhookSecret ? { sheetWebhookSecret: webhookSecret } : {}),
       },
     });
 
     return NextResponse.json({ success: true, project });
   } catch (error) {
-    console.error("Error updating project:", error);
+    console.error('Error updating project:', error);
     return NextResponse.json(
-      { error: "فشل في تحديث المشروع" },
+      { error: 'فشل في تحديث المشروع' },
       { status: 500 },
     );
   }
@@ -187,14 +168,14 @@ export async function DELETE(
 ) {
   const auth = await getAuthFromRequest(request);
   if (!auth) {
-    return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
+    return NextResponse.json({ error: 'غير مصرح' }, { status: 401 });
   }
 
   try {
     const { id } = await params;
     const projectId = parseInt(id);
     if (isNaN(projectId)) {
-      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
     }
 
     await prisma.project.delete({
@@ -203,7 +184,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error deleting project:", error);
-    return NextResponse.json({ error: "فشل في حذف المشروع" }, { status: 500 });
+    console.error('Error deleting project:', error);
+    return NextResponse.json({ error: 'فشل في حذف المشروع' }, { status: 500 });
   }
 }
