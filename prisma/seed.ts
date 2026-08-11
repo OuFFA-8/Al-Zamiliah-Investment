@@ -241,6 +241,14 @@ async function main() {
     await prisma.projectImage.create({ data: { projectId: niloufarCompound.id, url: 'https://alzamiliah.com/images/projects/1773177666.webp', sortOrder: 0 } });
 
     console.log('✅ Gallery images seeded');
+
+    // إعادة ضبط الـ sequence بتاع الـ id بعد إننا حطينا ids يدوي (28-37)
+    // عشان أي مشروع جديد يتعمل من الأدمن بعد كده ياخد id صح من غير تعارض
+    await prisma.$executeRawUnsafe(
+        `SELECT setval('projects_id_seq', (SELECT MAX(id) FROM projects))`,
+    );
+    console.log('✅ Sequence reset');
+
     console.log('\n🎉 Seeding complete!');
     console.log('📧 Admin: abdullah@alzamiliah.com');
     console.log('🔑 Password: Aa123456Aa');
