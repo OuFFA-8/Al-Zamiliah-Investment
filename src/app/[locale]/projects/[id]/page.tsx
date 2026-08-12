@@ -106,6 +106,19 @@ const CheckIcon = () => (
   </svg>
 );
 
+/**
+ * لو اللينك رابط Google Drive (بأي شكل من أشكاله المعروفة)، بيرجع الـ
+ * FILE_ID بتاعه. غير كده بيرجع null - يعني اللينك صورة عادية أو ملف
+ * مرفوع محليًا، ومش محتاج معاملة خاصة.
+ */
+function getDriveFileId(url: string): string | null {
+  let match = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (match) return match[1];
+  match = url.match(/drive\.google\.com\/(?:uc|open)\?(?:export=view&)?id=([a-zA-Z0-9_-]+)/);
+  if (match) return match[1];
+  return null;
+}
+
 function AptFeatures({ apt, isRTL }: { apt: Apartment; isRTL: boolean }) {
   // حقول رقمية: تتعرض بس لو قيمتها أكبر من صفر
   const items = [
@@ -422,9 +435,36 @@ function AptUnitRow({
             </span>
           </div>
           <div className="pdp-unit-expand-grid">
-            {/* Image */}
+            {/* Image / Floor Plan */}
             <div>
-              {apt.image ? (
+              {apt.image && getDriveFileId(apt.image) ? (
+                <div>
+                  <iframe
+                    src={`https://drive.google.com/file/d/${getDriveFileId(apt.image)}/preview`}
+                    className="pdp-unit-image"
+                    style={{
+                      width: "100%",
+                      height: 300,
+                      border: "none",
+                      borderRadius: 8,
+                    }}
+                    allow="autoplay"
+                  />
+                  <a
+                    href={`https://drive.google.com/file/d/${getDriveFileId(apt.image)}/view`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: "inline-block",
+                      marginTop: 8,
+                      fontSize: 13,
+                      color: "var(--color-primary)",
+                    }}
+                  >
+                    {isRTL ? "فتح المخطط في تاب جديد" : "Open plan in new tab"}
+                  </a>
+                </div>
+              ) : apt.image ? (
                 <a
                   href={
                     apt.image.startsWith("http")
