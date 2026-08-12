@@ -3,7 +3,14 @@ import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 import prisma from './prisma';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'alzamiliah-super-secret-jwt-key-2024';
+// مفيش قيمة افتراضية هنا عمدًا - لو الـ .env متظبطش صح، السيستم
+// يوقف بدل ما يشتغل بمفتاح تشفير معروف ومكتوب في الكود نفسه
+if (!process.env.JWT_SECRET) {
+    throw new Error(
+        'JWT_SECRET غير موجود في متغيرات البيئة (.env) - لازم تضيفه قبل تشغيل السيرفر',
+    );
+}
+const JWT_SECRET = process.env.JWT_SECRET;
 const COOKIE_NAME = 'admin_token';
 
 export interface JWTPayload {
@@ -36,7 +43,10 @@ export async function setAuthCookie(token: string) {
     const cookieStore = await cookies();
     cookieStore.set(COOKIE_NAME, token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        // بنتحكم فيها بمتغير بيئة منفصل بدل NODE_ENV، عشان لو شغالين على
+        // preview بـ IP:PORT من غير HTTPS، نقدر نطفيها من الـ .env من غير
+        // ما نغيّر الكود، وترجع تتشغل تلقائي على الدومين الحقيقي اللي معاه SSL.
+        secure: process.env.COOKIE_SECURE !== 'false',
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7, // 7 days
         path: '/',
