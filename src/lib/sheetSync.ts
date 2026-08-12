@@ -385,9 +385,12 @@ export async function syncProjectFromSheet(
         }
       }
 
-      // أي وحدة كانت "من الشيت" (source=sheet) واختفت من الشيت دلوقتي = تتمسح
+      // الشيت هو مصدر الحقيقة الوحيد للمشروع المربوط بيه: أي وحدة (مهما
+      // كان مصدرها الأصلي، يدوي أو من الشيت) مش موجودة في الشيت دلوقتي = تتمسح.
+      // استثناء: وحدة من غير unitCode أصلًا مش بنلمسها، لأننا مش هنقدر
+      // نتأكد إنها فعلًا مش موجودة في الشيت (مفيش حاجة نقارنها بيها).
       for (const apt of existingApts) {
-        if (apt.source === 'sheet' && !sheetCodes.has(apt.unitCode || '')) {
+        if (apt.unitCode && !sheetCodes.has(apt.unitCode)) {
           await tx.apartment.delete({ where: { id: apt.id } });
           summary.deleted++;
         }
