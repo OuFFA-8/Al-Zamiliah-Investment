@@ -18,7 +18,7 @@ interface Apartment {
   unitCode: string;
   buildingName: string | null;
   type: string | null;
-  floor: number | null;
+  floor: string | null;
   area: number | null;
   buildingArea: number | null;
   roofArea: number | null;
@@ -330,6 +330,11 @@ function AptUnitRow({
           </span>
         )}
         {apt.area && <span>{apt.area} m²</span>}
+        {apt.floor && (
+          <span>
+            {isRTL ? "الدور" : "Floor"} {apt.floor}
+          </span>
+        )}
         {apt.bedrooms != null && (
           <span>
             {apt.bedrooms} {isRTL ? "غرف" : "BR"}
@@ -376,6 +381,11 @@ function AptUnitRow({
               <span>
                 <strong>{isRTL ? "كود الوحدة:" : "Unit Code:"}</strong>{" "}
                 {apt.unitCode}
+              </span>
+            )}
+            {apt.floor && (
+              <span>
+                <strong>{isRTL ? "الدور:" : "Floor:"}</strong> {apt.floor}
               </span>
             )}
             {apt.price != null && (
@@ -480,6 +490,7 @@ export default function ProjectDetailsPage({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [openBuilding, setOpenBuilding] = useState<string | null>(null);
+  const [shopsOpen, setShopsOpen] = useState(false);
   const [expandedApt, setExpandedApt] = useState<number | null>(null);
   // const [show3D, setShow3D] = useState(false);
   // const [showFollow, setShowFollow] = useState(false);
@@ -1144,20 +1155,31 @@ export default function ProjectDetailsPage({
                   <div className="pdp-card-label">
                     {isRTL ? "المحلات التجارية" : "Commercial Shops"}
                   </div>
-                  <div style={{ padding: "10px 0" }}>
-                    {shops.map((apt) => (
-                      <AptUnitRow
-                        key={apt.id}
-                        apt={apt}
-                        isRTL={isRTL}
-                        isExpanded={expandedApt === apt.id}
-                        onToggle={() =>
-                          setExpandedApt(
-                            expandedApt === apt.id ? null : apt.id,
-                          )
-                        }
-                      />
-                    ))}
+                  <div style={{ marginBottom: 12 }}>
+                    <button
+                      className="pdp-building-btn"
+                      onClick={() => setShopsOpen(!shopsOpen)}
+                    >
+                      <span>{isRTL ? "المحلات" : "Shops"}</span>
+                      <span>{shopsOpen ? "▲" : "▼"}</span>
+                    </button>
+                    {shopsOpen && (
+                      <div style={{ padding: "10px 0" }}>
+                        {shops.map((apt) => (
+                          <AptUnitRow
+                            key={apt.id}
+                            apt={apt}
+                            isRTL={isRTL}
+                            isExpanded={expandedApt === apt.id}
+                            onToggle={() =>
+                              setExpandedApt(
+                                expandedApt === apt.id ? null : apt.id,
+                              )
+                            }
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
