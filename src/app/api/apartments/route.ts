@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { getAuthFromRequest } from '@/lib/auth';
 
 const prisma = new PrismaClient();
 
@@ -51,6 +52,14 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const auth = await getAuthFromRequest(request);
+  if (!auth) {
+    return NextResponse.json(
+      { error: 'الرجاء تسجيل الدخول للمتابعة' },
+      { status: 401 },
+    );
+  }
+
   try {
     const body = await request.json();
 

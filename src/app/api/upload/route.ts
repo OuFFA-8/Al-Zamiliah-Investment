@@ -1,9 +1,33 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
+import { getAuthFromRequest } from '@/lib/auth';
 
-export async function POST(request: Request) {
+// خريطة: نوع الملف (MIME) -> الامتداد الآمن اللي هنحفظ بيه، إحنا
+// اللي بنختاره مش الاسم اللي جاي من المستخدم، عشان محدش يقدر يمرر
+// امتداد غريب (زي .html أو .php) حتى لو غيّر اسم الملف قبل الرفع
+const ALLOWED_TYPES: Record<string, string> = {
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+    'image/gif': 'gif',
+    'application/pdf': 'pdf',
+    'video/mp4': 'mp4',
+    'video/webm': 'webm',
+    'video/quicktime': 'mov',
+    'video/x-msvideo': 'avi',
+};
+
+export async function POST(request: NextRequest) {
+    const auth = await getAuthFromRequest(request);
+    if (!auth) {
+        return NextResponse.json(
+            { error: 'الرجاء تسجيل الدخول للمتابعة' },
+            { status: 401 },
+        );
+    }
+
     try {
         const formData = await request.formData();
         const file = formData.get('file') as File;
@@ -13,13 +37,10 @@ export async function POST(request: Request) {
         }
 
         // Validate file type — allow images, PDFs, and videos
-        const allowedTypes = [
-            'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml',
-            'application/pdf',
-            'video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo',
-        ];
-        if (!allowedTypes.includes(file.type)) {
-            return NextResponse.json({ error: 'Invalid file type. Allowed: Images, PDF, Video.' }, { status: 400 });
+        // (SVG ممنوعة عمدًا: ممكن تحمل جوها JavaScript شغال، وده مخاطرة XSS)
+        const ext = ALLOWED_TYPES[file.type];
+        if (!ext) {
+            return NextResponse.json({ error: 'Invalid file type. Allowed: Images (jpg/png/webp/gif), PDF, Video.' }, { status: 400 });
         }
 
         // Validate file size (max 50MB for videos, 10MB for others)
@@ -34,8 +55,8 @@ export async function POST(request: Request) {
             await mkdir(uploadDir, { recursive: true });
         }
 
-        // Generate unique filename
-        const ext = file.name.split('.').pop() || 'bin';
+        // اسم الملف بالكامل من توليدنا إحنا، مش من اسم الملف الأصلي
+        // (اللي ممكن يتلاعب فيه المستخدم قبل الرفع)
         const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
         const filepath = join(uploadDir, filename);
 

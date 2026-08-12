@@ -1,11 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { getAuthFromRequest } from '@/lib/auth';
 
 // POST - Add a gallery image
 export async function POST(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
+    const auth = await getAuthFromRequest(request);
+    if (!auth) {
+        return NextResponse.json(
+            { error: 'الرجاء تسجيل الدخول للمتابعة' },
+            { status: 401 },
+        );
+    }
+
     try {
         const { id } = await params;
         const projectId = parseInt(id);
@@ -41,6 +50,14 @@ export async function POST(
 export async function DELETE(
     request: NextRequest,
 ) {
+    const auth = await getAuthFromRequest(request);
+    if (!auth) {
+        return NextResponse.json(
+            { error: 'الرجاء تسجيل الدخول للمتابعة' },
+            { status: 401 },
+        );
+    }
+
     try {
         const { searchParams } = new URL(request.url);
         const imageId = parseInt(searchParams.get('imageId') || '');

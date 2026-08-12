@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { getAuthFromRequest } from '@/lib/auth';
 
 const prisma = new PrismaClient();
 
@@ -38,6 +39,11 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const auth = await getAuthFromRequest(request);
+  if (!auth) {
+    return NextResponse.json({ error: 'الرجاء تسجيل الدخول للمتابعة' }, { status: 401 });
+  }
+
   const { id } = await params;
   try {
     const body = await request.json();
@@ -86,9 +92,14 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const auth = await getAuthFromRequest(request);
+  if (!auth) {
+    return NextResponse.json({ error: 'الرجاء تسجيل الدخول للمتابعة' }, { status: 401 });
+  }
+
   const { id } = await params;
   try {
     await prisma.apartment.delete({ where: { id: parseInt(id) } });
