@@ -1,8 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import prisma from '@/lib/prisma';
 import { getAuthFromRequest } from '@/lib/auth';
 
-const prisma = new PrismaClient();
+
 
 const VALID_STATUSES = ['available', 'reserved', 'sold', 'محجوب'];
 
@@ -37,6 +37,12 @@ function validateApartment(body: any, isUpdate: boolean): string[] {
 }
 
 export async function GET(request: NextRequest) {
+    const auth = await getAuthFromRequest(request);
+  if (!auth) {
+    return NextResponse.json({ error: 'الرجاء تسجيل الدخول للمتابعة' }, { status: 401 });
+  }
+
+
   const projectId = request.nextUrl.searchParams.get('projectId');
 
   try {
