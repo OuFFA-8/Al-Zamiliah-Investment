@@ -9,7 +9,9 @@ export class SheetValidationError extends Error {
   }[];
 
   constructor(issues: SheetValidationError['issues']) {
-    super(`يوجد ${issues.length} ${issues.length === 1 ? 'مشكلة' : 'مشكلات'} في بيانات الشيت يجب إصلاحها قبل المزامنة`);
+    super(
+      `يوجد ${issues.length} ${issues.length === 1 ? 'مشكلة' : 'مشكلات'} في بيانات الشيت يجب إصلاحها قبل المزامنة`,
+    );
     this.name = 'SheetValidationError';
     this.issues = issues;
   }
@@ -25,8 +27,8 @@ const HEADER_ALIASES: Record<string, string[]> = {
   buildingName: ['الزون'],
   floor: ['الدور'],
   area: ['المساحة الإجمالية (م²)', 'المساحة (م²)', 'المساحة'],
-  buildingArea: ['مساحة البناء (م²)'],
-  roofArea: ['مساحة السطح (م²)'],
+  buildingArea: ['مساحة البناء (م²)', 'مساحة الأرضي (م²)'],
+  roofArea: ['مساحة السطح (م²)', 'مساحة الميزانين (م²)'],
   price: ['السعر (ر.س)', 'السعر'],
   bedrooms: ['غرف النوم', 'عدد الغرف'],
   bathrooms: ['الحمامات', 'دورات المياه'],
@@ -265,7 +267,7 @@ export async function syncProjectFromSheet(
         issues.push({
           type: 'duplicate',
           unitCode,
-          detail:`هذا الكود مكرر ${count} ${count === 2 ? 'مرتين' : 'مرات'} داخل نفس الشيت`,
+          detail: `هذا الكود مكرر ${count} ${count === 2 ? 'مرتين' : 'مرات'} داخل نفس الشيت`,
         });
       }
     }
