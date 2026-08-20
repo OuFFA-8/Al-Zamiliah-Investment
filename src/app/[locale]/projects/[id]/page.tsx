@@ -418,14 +418,28 @@ function AptUnitRow({
             {apt.buildingArea != null && (
               <span>
                 <strong>
-                  {isRTL ? "مساحة البناء:" : "Building Area:"}
+                  {apt.type === "محل"
+                    ? isRTL
+                      ? "مساحة الأرض:"
+                      : "Land Area:"
+                    : isRTL
+                      ? "مساحة البناء:"
+                      : "Building Area:"}
                 </strong>{" "}
                 {apt.buildingArea} m²
               </span>
             )}
             {apt.roofArea != null && (
               <span>
-                <strong>{isRTL ? "مساحة السطح:" : "Roof Area:"}</strong>{" "}
+                <strong>
+                  {apt.type === "محل"
+                    ? isRTL
+                      ? "مساحة الميزانين:"
+                      : "Mezzanine Area:"
+                    : isRTL
+                      ? "مساحة السطح:"
+                      : "Roof Area:"}
+                </strong>{" "}
                 {apt.roofArea} m²
               </span>
             )}

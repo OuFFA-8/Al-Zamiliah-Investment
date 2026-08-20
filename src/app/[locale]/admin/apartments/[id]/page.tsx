@@ -702,7 +702,13 @@ export default function ApartmentsDetailPage() {
               </div>
               <div className="admin-field">
                 <label>
-                  {isRTL ? "مساحة البناء (م²)" : "Building Area (m²)"}
+                  {form.type === "محل"
+                    ? isRTL
+                      ? "مساحة الأرض (م²)"
+                      : "Land Area (m²)"
+                    : isRTL
+                      ? "مساحة البناء (م²)"
+                      : "Building Area (m²)"}
                 </label>
                 <input
                   type="number"
@@ -714,7 +720,15 @@ export default function ApartmentsDetailPage() {
                 />
               </div>
               <div className="admin-field">
-                <label>{isRTL ? "مساحة الروف (م²)" : "Roof Area (m²)"}</label>
+                <label>
+                  {form.type === "محل"
+                    ? isRTL
+                      ? "مساحة الميزانين (م²)"
+                      : "Mezzanine Area (m²)"
+                    : isRTL
+                      ? "مساحة الروف (م²)"
+                      : "Roof Area (m²)"}
+                </label>
                 <input
                   type="number"
                   step="0.01"
@@ -1351,9 +1365,13 @@ export default function ApartmentsDetailPage() {
                             display: "block",
                           }}
                         >
-                          {isRTL
-                            ? `بناء: ${apt.buildingArea}`
-                            : `Build: ${apt.buildingArea}`}
+                          {apt.type === "محل"
+                            ? isRTL
+                              ? `أرض: ${apt.buildingArea}`
+                              : `Land: ${apt.buildingArea}`
+                            : isRTL
+                              ? `بناء: ${apt.buildingArea}`
+                              : `Build: ${apt.buildingArea}`}
                         </span>
                       )}
                     </td>

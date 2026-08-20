@@ -9,9 +9,7 @@ export class SheetValidationError extends Error {
   }[];
 
   constructor(issues: SheetValidationError['issues']) {
-    super(
-      `يوجد ${issues.length} ${issues.length === 1 ? 'مشكلة' : 'مشكلات'} في بيانات الشيت يجب إصلاحها قبل المزامنة`,
-    );
+    super(`يوجد ${issues.length} ${issues.length === 1 ? 'مشكلة' : 'مشكلات'} في بيانات الشيت يجب إصلاحها قبل المزامنة`);
     this.name = 'SheetValidationError';
     this.issues = issues;
   }
@@ -27,7 +25,12 @@ const HEADER_ALIASES: Record<string, string[]> = {
   buildingName: ['الزون'],
   floor: ['الدور'],
   area: ['المساحة الإجمالية (م²)', 'المساحة (م²)', 'المساحة'],
-  buildingArea: ['مساحة البناء (م²)', 'مساحة الأرضي (م²)'],
+  // ملاحظة: نفس العمودين دول معناهم بيختلف حسب نوع الوحدة (type):
+  // - شقة/دوبلكس: buildingArea = مساحة البناء، roofArea = مساحة السطح
+  // - محل: buildingArea = مساحة الأرض، roofArea = مساحة الميزانين
+  // القيم بتتخزن زي ما هي في نفس الحقلين، والفرونت اند هو اللي بيغيّر
+  // الـ label المعروض حسب apt.type === "محل" (مش هنا في المزامنة)
+  buildingArea: ['مساحة البناء (م²)', 'مساحة الأرضي (م²)', 'مساحة الأرض (م²)'],
   roofArea: ['مساحة السطح (م²)', 'مساحة الميزانين (م²)'],
   price: ['السعر (ر.س)', 'السعر'],
   bedrooms: ['غرف النوم', 'عدد الغرف'],
@@ -153,6 +156,28 @@ export function parseSheetRows(rawRows: unknown[][]): ParsedRow[] {
     const row = rawRows[r];
     if (!row || !row.some((c) => normalizeCell(c))) continue; // صف فاضي بالكامل
 
+    // الشيت أحيانًا بيتقسم لأقسام (شقق / ملاحق دوبلكس / محلات تجارية)،
+    // وكل قسم بيتقدمه صف عنوان (بيتجاهل تلقائيًا لعدم وجود كود وحدة)
+    // وصف بيكرر عناوين الأعمدة تاني (ممكن بأسماء مختلفة شوية زي "مساحة
+    // الأرضي" بدل "مساحة البناء"). لازم نكتشف الصف ده ونتجاهله بالكامل،
+    // وإلا هيتقرا كأنه صف بيانات فيه "كود الوحدة" و"الحالة" كنصوص حرفية.
+    let headerLikeMatches = 0;
+    let populatedMappedCols = 0;
+    for (const [idxStr, field] of Object.entries(colIndexToField)) {
+      const idx = Number(idxStr);
+      const cell = normalizeCell(row[idx]);
+      if (!cell) continue;
+      populatedMappedCols++;
+      if (HEADER_ALIASES[field]?.includes(cell)) headerLikeMatches++;
+    }
+    if (
+      populatedMappedCols > 0 &&
+      headerLikeMatches >= 2 &&
+      headerLikeMatches / populatedMappedCols >= 0.5
+    ) {
+      continue; // صف تكرار هيدر - تجاهله بالكامل، مش صف بيانات
+    }
+
     const fields: Record<string, string | number | null> = {};
     let unitCode = '';
 
@@ -267,7 +292,7 @@ export async function syncProjectFromSheet(
         issues.push({
           type: 'duplicate',
           unitCode,
-          detail: `هذا الكود مكرر ${count} ${count === 2 ? 'مرتين' : 'مرات'} داخل نفس الشيت`,
+          detail:`هذا الكود مكرر ${count} ${count === 2 ? 'مرتين' : 'مرات'} داخل نفس الشيت`,
         });
       }
     }
