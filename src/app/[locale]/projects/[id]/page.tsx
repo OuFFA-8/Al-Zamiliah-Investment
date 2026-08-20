@@ -420,7 +420,7 @@ function AptUnitRow({
                 <strong>
                   {apt.type === "محل"
                     ? isRTL
-                      ? "مساحة الأرض:"
+                      ? "مساحة الارضي:"
                       : "Land Area:"
                     : isRTL
                       ? "مساحة البناء:"
