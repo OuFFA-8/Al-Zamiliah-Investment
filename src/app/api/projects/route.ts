@@ -1,17 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { getAuthFromRequest } from "@/lib/auth";
+import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
+import { getAuthFromRequest } from '@/lib/auth';
 
 // GET - List all projects (admin)
 export async function GET(request: NextRequest) {
   const auth = await getAuthFromRequest(request);
   if (!auth) {
-    return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
+    return NextResponse.json({ error: 'غير مصرح' }, { status: 401 });
   }
 
   try {
     const projects = await prisma.project.findMany({
-      orderBy: { sortOrder: "asc" },
+      orderBy: { sortOrder: 'asc' },
       include: {
         _count: {
           select: { apartments: true },
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(projects);
   } catch (error) {
-    console.error("Error fetching projects:", error);
+    console.error('Error fetching projects:', error);
     return NextResponse.json([], { status: 500 });
   }
 }
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   const auth = await getAuthFromRequest(request);
   if (!auth) {
-    return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
+    return NextResponse.json({ error: 'غير مصرح' }, { status: 401 });
   }
 
   try {
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       });
       if (existing) {
         return NextResponse.json(
-          { error: "هذا الترتيب مستخدم بالفعل" },
+          { error: 'هذا الترتيب مستخدم بالفعل' },
           { status: 400 },
         );
       }
@@ -84,7 +84,6 @@ export async function POST(request: NextRequest) {
         linkLocation: body.linkLocation || null,
         linkProject: body.linkProject || null,
         linkMap: body.linkMap || null,
-        videoLink: body.videoLink || null,
         livePreview: body.livePreview || null,
         city: body.city || null,
         lat: body.lat ? parseFloat(body.lat) : null,
@@ -113,8 +112,14 @@ export async function POST(request: NextRequest) {
         buildYear: body.buildYear ? String(body.buildYear) : null,
         sqFit: body.sqFit ? String(body.sqFit) : null,
         projectFile: body.projectFile || null,
+        projectFileTitleAr: body.projectFileTitleAr || null,
+        projectFileTitleEn: body.projectFileTitleEn || null,
         projectFile2: body.projectFile2 || null,
+        projectFile2TitleAr: body.projectFile2TitleAr || null,
+        projectFile2TitleEn: body.projectFile2TitleEn || null,
         projectFile3: body.projectFile3 || null,
+        projectFile3TitleAr: body.projectFile3TitleAr || null,
+        projectFile3TitleEn: body.projectFile3TitleEn || null,
         video: body.video || null,
       },
     });
@@ -134,9 +139,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, project });
   } catch (error) {
-    console.error("Error creating project:", error);
+    console.error('Error creating project:', error);
     return NextResponse.json(
-      { error: "فشل في إنشاء المشروع" },
+      { error: 'فشل في إنشاء المشروع' },
       { status: 500 },
     );
   }
