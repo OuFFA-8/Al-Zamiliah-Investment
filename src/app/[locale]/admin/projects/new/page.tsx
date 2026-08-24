@@ -190,9 +190,12 @@ export default function NewProjectPage() {
       image4: images.image4 || "",
       image5: images.image5 || "",
       image6: images.image6 || "",
-      projectFile: files.projectFile || "",
-      projectFile2: files.projectFile2 || "",
-      projectFile3: files.projectFile3 || "",
+            projectFileTitleAr: "",
+      projectFileTitleEn: "",
+      projectFile2TitleAr: "",
+      projectFile2TitleEn: "",
+      projectFile3TitleAr: "",
+      projectFile3TitleEn: "",
       video: files.video || "",
       galleryImages,
       buildingsCount: parseInt(String(form.buildingsCount)) || 0,
@@ -760,21 +763,27 @@ export default function NewProjectPage() {
             {/* File Uploads */}
             <div className="admin-section">
               <h3>{isRTL ? "ملفات المشروع" : "Project Files"}</h3>
-              {[
+               {[
                 {
                   key: "projectFile",
                   labelAr: "ملف المشروع",
                   labelEn: "Project File",
+                  titleArKey: "projectFileTitleAr",
+                  titleEnKey: "projectFileTitleEn",
                 },
                 {
                   key: "projectFile2",
                   labelAr: "ملف المشروع 2",
                   labelEn: "Project File 2",
+                  titleArKey: "projectFile2TitleAr",
+                  titleEnKey: "projectFile2TitleEn",
                 },
                 {
                   key: "projectFile3",
                   labelAr: "ملف المشروع 3",
                   labelEn: "Project File 3",
+                  titleArKey: "projectFile3TitleAr",
+                  titleEnKey: "projectFile3TitleEn",
                 },
                 {
                   key: "video",
@@ -801,10 +810,28 @@ export default function NewProjectPage() {
                     }
                     style={{ padding: "6px" }}
                   />
-                  {files[f.key] && (
+                     {files[f.key] && (
                     <span style={{ fontSize: "11px", color: "#059669" }}>
                       ✓ {isRTL ? "تم الرفع" : "Uploaded"}
                     </span>
+                  )}
+                  {f.titleArKey && f.titleEnKey && (
+                    <div style={{ display: "flex", gap: "8px", marginTop: "6px" }}>
+                      <input
+                        type="text"
+                        placeholder={isRTL ? "العنوان (عربي)" : "Title (Arabic)"}
+                        value={(form as any)[f.titleArKey] || ""}
+                        onChange={(e) => updateField(f.titleArKey!, e.target.value)}
+                        style={{ flex: 1, fontSize: "12px" }}
+                      />
+                      <input
+                        type="text"
+                        placeholder={isRTL ? "العنوان (إنجليزي)" : "Title (English)"}
+                        value={(form as any)[f.titleEnKey] || ""}
+                        onChange={(e) => updateField(f.titleEnKey!, e.target.value)}
+                        style={{ flex: 1, fontSize: "12px" }}
+                      />
+                    </div>
                   )}
                 </div>
               ))}

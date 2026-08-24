@@ -77,9 +77,15 @@ interface Project {
   house: number;
   sqFit: string | null;
   buildYear: string | null;
-  projectFile: string | null;
+   projectFile: string | null;
+  projectFileTitleAr: string | null;
+  projectFileTitleEn: string | null;
   projectFile2: string | null;
+  projectFile2TitleAr: string | null;
+  projectFile2TitleEn: string | null;
   projectFile3: string | null;
+  projectFile3TitleAr: string | null;
+  projectFile3TitleEn: string | null;
   video: string | null;
   apartments: Apartment[];
   galleryImages: GalleryImage[];
@@ -1470,7 +1476,9 @@ export default function ProjectDetailsPage({
                             (e.currentTarget.style.opacity = "1")
                           }
                         >
-                          {isRTL ? "ملف المشروع" : "Project File"}
+                          {isRTL
+                          ? project.projectFileTitleAr || "ملف المشروع"
+                          : project.projectFileTitleEn || "Project File"}
                         </a>
                       </div>
                     )}
@@ -1503,7 +1511,9 @@ export default function ProjectDetailsPage({
                             (e.currentTarget.style.opacity = "1")
                           }
                         >
-                          {isRTL ? "ملف المشروع 2" : "File 2"}
+                          {isRTL
+                            ? project.projectFile2TitleAr || "ملف المشروع 2"
+                            : project.projectFile2TitleEn || "File 2"}
                         </a>
                       </div>
                     )}
@@ -1536,7 +1546,9 @@ export default function ProjectDetailsPage({
                             (e.currentTarget.style.opacity = "1")
                           }
                         >
-                          {isRTL ? "ملف المشروع 3" : "File 3"}
+                                                    {isRTL
+                            ? project.projectFile3TitleAr || "ملف المشروع 3"
+                            : project.projectFile3TitleEn || "File 3"}
                         </a>
                       </div>
                     )}

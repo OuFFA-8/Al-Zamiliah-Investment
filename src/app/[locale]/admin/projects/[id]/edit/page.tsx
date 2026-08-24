@@ -125,8 +125,14 @@ export default function EditProjectPage({
     elevatorsCount: 0,
     isFeatured: 0,
     sortOrder: 0,
-    sheetUrl: "",
+      sheetUrl: "",
     sheetTabName: "",
+    projectFileTitleAr: "",
+    projectFileTitleEn: "",
+    projectFile2TitleAr: "",
+    projectFile2TitleEn: "",
+    projectFile3TitleAr: "",
+    projectFile3TitleEn: "",
   });
 
   const [images, setImages] = useState<Record<string, string>>({});
@@ -191,8 +197,15 @@ export default function EditProjectPage({
           elevatorsCount: p.elevatorsCount ?? 0,
           isFeatured: p.isFeatured ?? 0,
           sortOrder: p.sortOrder ?? 0,
-          sheetUrl: p.sheetUrl || "",
+                 sheetUrl: p.sheetUrl || "",
           sheetTabName: p.sheetTabName || "",
+          projectFileTitleAr: p.projectFileTitleAr || "",
+          projectFileTitleEn: p.projectFileTitleEn || "",
+          projectFile2TitleAr: p.projectFile2TitleAr || "",
+          projectFile2TitleEn: p.projectFile2TitleEn || "",
+          projectFile3TitleAr: p.projectFile3TitleAr || "",
+          projectFile3TitleEn: p.projectFile3TitleEn || "",
+
         });
         setSheetMeta({
           status: p.sheetSyncStatus || "idle",
@@ -303,9 +316,15 @@ export default function EditProjectPage({
       image4: images.image4 || "",
       image5: images.image5 || "",
       image6: images.image6 || "",
-      projectFile: files.projectFile || "",
+        projectFile: files.projectFile || "",
+      projectFileTitleAr: form.projectFileTitleAr || "",
+      projectFileTitleEn: form.projectFileTitleEn || "",
       projectFile2: files.projectFile2 || "",
+      projectFile2TitleAr: form.projectFile2TitleAr || "",
+      projectFile2TitleEn: form.projectFile2TitleEn || "",
       projectFile3: files.projectFile3 || "",
+      projectFile3TitleAr: form.projectFile3TitleAr || "",
+      projectFile3TitleEn: form.projectFile3TitleEn || "",
       video: files.video || "",
     };
 
@@ -1053,23 +1072,29 @@ export default function EditProjectPage({
             </div>
 
             {/* Files */}
-            <div className="admin-section">
+                     <div className="admin-section">
               <h3>{isRTL ? "ملفات المشروع" : "Project Files"}</h3>
               {[
                 {
                   key: "projectFile",
                   labelAr: "ملف المشروع",
                   labelEn: "Project File",
+                  titleArKey: "projectFileTitleAr" as const,
+                  titleEnKey: "projectFileTitleEn" as const,
                 },
                 {
                   key: "projectFile2",
                   labelAr: "ملف المشروع 2",
                   labelEn: "File 2",
+                  titleArKey: "projectFile2TitleAr" as const,
+                  titleEnKey: "projectFile2TitleEn" as const,
                 },
                 {
                   key: "projectFile3",
                   labelAr: "ملف المشروع 3",
                   labelEn: "File 3",
+                  titleArKey: "projectFile3TitleAr" as const,
+                  titleEnKey: "projectFile3TitleEn" as const,
                 },
                 { key: "video", labelAr: "فديو للمشروع", labelEn: "Video" },
               ].map((f) => (
@@ -1096,6 +1121,32 @@ export default function EditProjectPage({
                     <span style={{ fontSize: "11px", color: "#059669" }}>
                       ✓ {files[f.key].split("/").pop()}
                     </span>
+                  )}
+                  {f.titleArKey && f.titleEnKey && (
+                    <div
+                      style={{ display: "flex", gap: "8px", marginTop: "6px" }}
+                    >
+                      <input
+                        type="text"
+                        placeholder={isRTL ? "العنوان (عربي)" : "Title (Arabic)"}
+                        value={form[f.titleArKey]}
+                        onChange={(e) =>
+                          updateField(f.titleArKey, e.target.value)
+                        }
+                        style={{ flex: 1, fontSize: "12px" }}
+                      />
+                      <input
+                        type="text"
+                        placeholder={
+                          isRTL ? "العنوان (إنجليزي)" : "Title (English)"
+                        }
+                        value={form[f.titleEnKey]}
+                        onChange={(e) =>
+                          updateField(f.titleEnKey, e.target.value)
+                        }
+                        style={{ flex: 1, fontSize: "12px" }}
+                      />
+                    </div>
                   )}
                 </div>
               ))}
