@@ -56,7 +56,7 @@ model Project {
   linkLocation    String?       @map("link_location")
   linkProject     String?       @map("link_project")
   linkMap         String?       @map("link_map")
-  videoLink       String?       @map("video_link")
+  video           String?
   livePreview     String?       @map("live_preview")
   city            String?
   lat             Float?
@@ -78,10 +78,15 @@ model Project {
   iconFollow      String?       @map("icon_follow")
   buildYear       String?       @map("build_year")
   sqFit           String?       @map("sq_fit")
-  projectFile     String?       @map("project_file")
-  projectFile2    String?       @map("project_file2")
-  projectFile3    String?       @map("project_file3")
-  video           String?
+   projectFile         String?  @map("project_file")
+  projectFileTitleAr   String? @map("project_file_title_ar")
+  projectFileTitleEn   String? @map("project_file_title_en")
+  projectFile2         String? @map("project_file2")
+  projectFile2TitleAr  String? @map("project_file2_title_ar")
+  projectFile2TitleEn  String? @map("project_file2_title_en")
+  projectFile3         String? @map("project_file3")
+  projectFile3TitleAr  String? @map("project_file3_title_ar")
+  projectFile3TitleEn  String? @map("project_file3_title_en")
   apartments      Apartment[]
   galleryImages   ProjectImage[]
   createdAt       DateTime      @default(now()) @map("created_at")
