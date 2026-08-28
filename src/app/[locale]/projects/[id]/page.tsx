@@ -1227,7 +1227,16 @@ export default function ProjectDetailsPage({
                       className="pdp-building-btn"
                       onClick={() => setShopsOpen(!shopsOpen)}
                     >
-                      <span>{isRTL ? "المحلات" : "Shops"}</span>
+                      <span className="pdp-building-btn-text">
+                        <span className="pdp-building-btn-name">
+                          {isRTL ? "المحلات" : "Shops"}
+                        </span>
+                        <span className="pdp-building-btn-hint">
+                          {isRTL
+                            ? "اضغط هنا لعرض المحلات"
+                            : "Tap here to view shops"}
+                        </span>
+                      </span>
                       <span>{shopsOpen ? "▲" : "▼"}</span>
                     </button>
                     {shopsOpen && (
