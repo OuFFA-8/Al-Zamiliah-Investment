@@ -1160,11 +1160,11 @@ export default function ProjectDetailsPage({
                 </div>
               </div>
 
-              {/* Property Units */}
+              {/* Property Units (Buildings) */}
               {Object.keys(buildings).length > 0 && (
                 <div className="pdp-card">
                   <div className="pdp-card-label">
-                    {isRTL ? "الوحدات السكنية" : "Property Units"}
+                    {isRTL ? "المباني" : "Buildings"}
                   </div>
                   {Object.entries(buildings).map(([bName, apts]) => (
                     <div key={bName} style={{ marginBottom: 12 }}>
@@ -1174,16 +1174,23 @@ export default function ProjectDetailsPage({
                           setOpenBuilding(openBuilding === bName ? null : bName)
                         }
                       >
-                        <span>
-                          {bName === "General" ? (
-                            isRTL ? (
-                              "عام"
+                        <span className="pdp-building-btn-text">
+                          <span className="pdp-building-btn-name">
+                            {bName === "General" ? (
+                              isRTL ? (
+                                "عام"
+                              ) : (
+                                "General"
+                              )
                             ) : (
-                              "General"
-                            )
-                          ) : (
-                            <bdi>{bName}</bdi>
-                          )}
+                              <bdi>{bName}</bdi>
+                            )}
+                          </span>
+                          <span className="pdp-building-btn-hint">
+                            {isRTL
+                              ? "اضغط هنا لعرض الشقق"
+                              : "Tap here to view units"}
+                          </span>
                         </span>
                         <span>{openBuilding === bName ? "▲" : "▼"}</span>
                       </button>
