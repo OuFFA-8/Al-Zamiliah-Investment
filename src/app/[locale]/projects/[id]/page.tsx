@@ -1220,7 +1220,7 @@ export default function ProjectDetailsPage({
               {shops.length > 0 && (
                 <div className="pdp-card">
                   <div className="pdp-card-label">
-                    {isRTL ? "المحلات التجارية" : "Commercial Shops"}
+                    {isRTL ? "المعارض التجارية" : "Commercial Shops"}
                   </div>
                   <div style={{ marginBottom: 12 }}>
                     <button
@@ -1233,7 +1233,7 @@ export default function ProjectDetailsPage({
                         </span>
                         <span className="pdp-building-btn-hint">
                           {isRTL
-                            ? "اضغط هنا لعرض المحلات"
+                            ? "اضغط هنا لعرض المعارض التجارية"
                             : "Tap here to view shops"}
                         </span>
                       </span>
