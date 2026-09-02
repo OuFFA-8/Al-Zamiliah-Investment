@@ -1188,7 +1188,7 @@ export default function ProjectDetailsPage({
                           </span>
                           <span className="pdp-building-btn-hint">
                             {isRTL
-                              ? "اضغط هنا لعرض الشقق"
+                              ? "اضغط هنا لعرض الوحدات السكنية"
                               : "Tap here to view units"}
                           </span>
                         </span>
